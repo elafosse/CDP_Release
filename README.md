@@ -1,5 +1,5 @@
-# CDP_Dev
-#Github for development
+# CDP_Release
+#Github for releases
 
 #Group members:
 #_Kheloufi Rayan
