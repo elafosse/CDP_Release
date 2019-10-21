@@ -24,7 +24,8 @@ I1 (8, 13) -> En tant que visiteur, je souhaite me connecter à mon compte en cl
 * mon nom d'utilisateur unique sous forme de chaîne de charactères
 * un mot de passe sous forme de chaîne de charactères. 
 
-Une message d'erreur doit apparaître si le couple nom d'utilisateur/mot de passe entré ne correspond à aucun compte. 
+Une message d'erreur doit apparaître si le couple nom d'utilisateur/mot de passe entré ne correspond à aucun compte.
+
 I2 (1, 8) -> En tant que connecté, je souhaite pouvoir me déconnecter en cliquant sur un bouton "Déconnexion", afin de supprimer ma session en court.
 
 Participation aux Projet
