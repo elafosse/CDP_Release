@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script defer src="../backend/listProjects.js"></script>
+  <meta name="author" content="gr1_eq7"/>
+  <title>Liste de mes projets</title>
+</head>
+
+<body>
+  <a type="button" href="/newProject?user=<%= user.username%>" class="btn btn-success btn-lg">Nouveau Projet</a>
+  
+  <h1>Liste de mes projets</h1>
+  <ul class="list-unstyled">
+    <% userProjects.forEach(project => { %>
+      <li><%= project.name %>
+        <% if (user.username === project.admin.username) { %>
+          <form action="/removeProject" method="post">
+            <input type="text" name="projectId" class="form-control" id="name" value="<%= project.id %>" hidden>
+            <button type="submit" class="btn btn-primary">Supprimer</button>
+          </form>
+        <% } %>
+      </li>
+    <% }); %>
+  </ul>
+</body>
+</html>

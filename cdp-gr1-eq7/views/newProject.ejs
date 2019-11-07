@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script defer src="../backend/newProject.js"></script>
+  <meta name="author" content="gr1_eq7"/>
+  <title>Liste de mes projets</title>
+</head>
+
+<body>
+  <br>
+  <form action="/createProject" method="post" id="create-project">
+    <div class="form-group">
+      <label>Nom : <input id="projectName" type="text" name="projectName"></label> <br>
+      <label>Description : <input id="projectDescription" type="text" name="projectDescription"></label> <br>
+      
+      <label>Ajouter un membre au projet :<input id="usernameMemberToAdd" name="memberUsernameToAdd"></label>
+      <button type="submit" class="btn btn-primary" formaction="/addMember">Ajouter</button>
+      
+      <ul id="listProjectMembers">Liste des membres du projet : <%= listMembers.length %>
+        <% listMembers.forEach(member => { %>
+          <li><%= member.username %>
+            <form action="/removeMember" method="post" id="remove">
+              <input type="text" name="memberUsernameToRemove" class="form-control" value="<%= member.username %>" hidden>
+              <button type="submit" class="btn btn-primary" formaction="/removeMember">Supprimer</button>
+            </form>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
+      
+    <button type="submit" class="btn btn-primary" id="createNewProject" form="create-project">Créer Projet</button>
+  </form>
+</body>
+</html>

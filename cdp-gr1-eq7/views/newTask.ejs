@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/gh/RubaXa/Sortable/Sortable.min.js"></script>
+    <script defer src="../backend/newTask.js"></script>
+    <meta name="author" content="gr1_eq7" />
+    <title>Liste des taches</title>
+</head>
+
+<body>
+    <form>
+        <div class="form-group">
+            <label for="taskName">Nom de la tache</label>
+            <input type="text" class="form-control" id="taskName" placeholder="Nom de la tache">
+        </div>
+
+        <div class="form-group">
+            <label for="taskDescription">Description de la tache</label>
+            <textarea type="text" class="form-control" id="taskDescription" placeholder="Description"></textarea>
+        </div>
+
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="taskState1" value="A Faire">
+            <label class="form-check-label" for="taskState1">A faire</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="taskState2" value="En cours">
+            <label class="form-check-label" for="taskState2">En cours</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="taskState3" value="Fait">
+            <label class="form-check-label" for="taskState3">Fait</label>
+        </div>
+        <div class="form-group">
+            <label for="startDate">Date de début</label>
+            <input class="form-control" type="date" id="startDate">
+        </div>
+        <div class="form-group">
+            <label for="taskDuration">Durée de la tache</label>
+            <input type="number" class="form-control" id="taskDuration" placeholder="0">
+        </div>
+
+        <div class="form-group">
+            <label for="taskDoD">Definition of Done</label>
+            <textarea type="text" class="form-control" id="taskDoD" placeholder="Definition of done"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="taskMember">Affectation des membres</label>
+            <select multiple class="form-control" id="taskMember">
+                <!-- TODO : Remove placeholder once you can get members from project -->
+                <option>Membre 1</option>
+                <option>Membre 2</option>
+                <option>Membre 3</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="taskRequired">Taches pré-requises</label>
+            <select multiple class="form-control" id="taskRequired">
+                <!-- TODO : Remove placeholder once you can get list tasks -->
+                <option>TaskId1 - Nom de la tache</option>
+                <option>TaskId2 - Nom de la tache</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="taskIssue">Taches pré-requises</label>
+            <select multiple class="form-control" id="taskIssue">
+                <!-- TODO : Remove placeholder once you can get list issues -->
+                <option>IssueId1 - Nom de l'issue</option>
+                <option>IssueId2 - Nom de l'issue</option>
+            </select>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Créer la tâche</button>
+    </form>
+</body>
+
+</html>
