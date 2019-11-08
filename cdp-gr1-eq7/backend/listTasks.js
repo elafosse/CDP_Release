@@ -25,9 +25,9 @@ app.get('/newTask', function (req, res) {
 
 let taskList = [];
 /* Test values
-const testTask1 = new tasks.Task("2", "1", "Task 1", "Desc task 1", "To Do", "", "", "", [], [])
+const testTask1 = new tasks.Task("1", "2", "Task 1", "Desc task 1", "To Do", "", "", "", [], [])
 const testTask2 = new tasks.Task("2", "2", "Task 2", "Desc task 2", "Doing", "", "", "", [], [])
-const testTask3 = new tasks.Task("2", "3", "Task 3", "Desc task 3", "Done", "", "", "", [], []) 
+const testTask3 = new tasks.Task("3", "2", "Task 3", "Desc task 3", "Done", "", "", "", [], []) 
 
 taskList.push(testTask1)
 taskList.push(testTask2)
@@ -38,6 +38,13 @@ let taskDoing = []
 let taskDone = []
 
 app.get('/listTasks', function (req, res) {
+    db._getAllTasksIdsByProject(req.query.projectId).then(result => {
+        result.forEach(element => {
+            db._getTaskById(element).then(result => {
+                taskList.push(result)
+            })
+        })
+    })
     taskList.forEach(task => {
         switch (task.state) {
             case 'To Do':

@@ -1,5 +1,5 @@
-# CDP_Release
-#Github for release
+# CDP_Dev
+#Github for development
 
 Group members:
 * Kheloufi Rayan
@@ -57,3 +57,4 @@ Définitions
 | **I28** |        Pages dynamiques        |**En tant que** membre du projet **je souhaite** que le site soit responsif **afin qu**'il soit consultable sur n'importe quel écran| 13         | Basse    |  3  |
 | **I29** |        Statistiques d'un sprint        |**En tant que** membre du projet **je souhaite** avoir accès aux statistiques d'un sprint avec une barre de progression concernant : les jours restant, les issues, les tasks, tests. Ces barres doivent indiquer le travail qui a été fait, et celui restant à faire **afin de** m'aider à planifier le reste du projet plus facilement. | 13         | Basse    |  3  |
 | **I30** |         Menu de navigation dans un projet     |**En tant que** membre du projet, **je souhaite** avoir accès à un menu de navigation me permettant d'accéder facilement à : <li> la liste des issues <li> la liste des tâches <li> la liste des sprints <li> la liste des releases <li> la liste des documentations <li> la liste des tests </li> du projet **afin de** pouvoir accéder facilement à chaque partie du projet. | 3     | Haute     | 1 |
+

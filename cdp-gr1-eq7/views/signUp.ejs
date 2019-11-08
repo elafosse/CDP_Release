@@ -1,20 +1,16 @@
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
+
 <!doctype html>
 <html lang="en">
 <head>
-	<!-- Required meta tags -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<!-- Fonts -->
-	<link rel="dns-prefetch" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
-	<link rel="icon" href="Favicon.png">
+
+  <%- include ../views/header.ejs %>
+
 	<!-- Bootstrap CSS -->
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-	<title>Laravel</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"/>
+  <link rel="stylesheet" href="css/signIn.css"/>
+
+  <title>Sign Up</title>
 </head>
 <body>
 	<main class="login-form">
@@ -28,26 +24,26 @@
 								<div class="form-group row">
 									<label for="username" class="col-md-4 col-form-label text-md-right">Username</label>
 									<div class="col-md-6">
-										<input type="text" id="username" class="form-control" name="username" required autofocus>
+										<input type="text" id="username" class="form-control" name="username" required autofocus/>
 									</div>
 								</div>
 								<div class="form-group row">
 									<label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
 									<div class="col-md-6">
-										<input type="password" id="password" class="form-control" name="password" required>
+										<input type="password" id="password" class="form-control" name="password" required/>
 									</div>
 								</div>
 								<div class="form-group row">
 									<label for="confirmedPassword" class="col-md-4 col-form-label text-md-right">Confirm Password</label>
 									<div class="col-md-6">
-										<input type="password" id="confirmedPassword" class="form-control" name="confirmedPassword" required>
+										<input type="password" id="confirmedPassword" class="form-control" name="confirmedPassword" required/>
 									</div>
 								</div>
 								<div class="form-group row">
 									<div class="col-md-6 offset-md-4">
 										<div class="checkbox">
 											<label>
-												<input type="checkbox" name="remember"> Remember Me
+                        <input type="checkbox" name="remember"> Remember Me </input>
 											</label>
 										</div>
 									</div>
@@ -60,7 +56,6 @@
 										Forgot Your Password?
 									</a>
 								</div>
-						</div>
 						</form>
 					</div>
 				</div>
