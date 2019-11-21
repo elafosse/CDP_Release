@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>-->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <script defer src="../backend/listSprints.js"></script>
+    <meta name="author" content="gr1_eq7" />
+  </head>
+  <body>
+    <%- include ../views/partials/header.ejs %>
+
+    <div class="row">
+      <% include ./projectSidebar %>
+      <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 col-xl-9">
+        <br />
+        <h1>List of Sprints</h1>
+        <hr />
+        <a
+          type="button"
+          href="/newIssue?projectId=<%= project.id%>"
+          class="btn btn-success btn-lg"
+          >Nouveau sprint</a
+        >
+
+        <ul class="list-unstyled">
+          <% listSprints.forEach(sprint => { %>
+          <li>
+            <%= sprint.id + ': '%> <%= sprint.name %><br />
+            Issues du sprint :
+            <ul class="list-unstyled">
+              <% sprint.listIssuesSprint.forEach(issue => { %>
+              <li id="listIssuesSprint"><%= issue.id + ': ' + issue.name %></li>
+              <% }); %>
+            </ul>
+            <a
+              type="button"
+              href="/modifyIssue?projectId=<%= project.id%>&sprintId=<%= sprint.id %>"
+              class="btn btn-success btn-lg"
+              >Modifier</a
+            >
+            <form action="/removeIssue?projectId=<% project.id%>" method="post">
+              <input
+                type="text"
+                name="issueId"
+                class="form-control"
+                id="name"
+                value="<%= sprint.id %>"
+                hidden
+              />
+              <button
+                type="submit"
+                class="btn btn-primary"
+                formaction="/removeIssue"
+              >
+                Supprimer
+              </button>
+            </form>
+          </li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

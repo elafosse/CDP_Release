@@ -4,27 +4,56 @@ const app = express()
 
 /* REQUIRED */
 const path = require('path')
-const ejs = require('ejs')
-let bodyParser = require('body-parser')
-const index = require('./index')
-const listProjects = require('./listProjects') // TODO : move to signIn
-const listTasks = require("./listTasks")
+const bodyParser = require('body-parser')
+
 const signIn = require('./signIn')
 const signUp = require('./signUp')
+const listProjects = require('./listProjects')
+const overviewProject = require('./overviewProject')
+const listIssues = require('./listIssues')
+const listTasks = require('./listTasks')
+const listTests = require('./listTests')
+const listSprints = require('./listSprints')
+const index = require('./index')
 
 /* USE THE REQUIRES */
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(signIn.app)
-app.use(signUp.app)
-app.use(index.app)
-app.use(listProjects.app) // TODO : move to signIn
-app.use(listTasks.app)
+app.use(express.static('../public')) // Mettre l'URL du dossier 'public' par rapport a initApp.js
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, './..', '/views'))
 
+/* Index */
+app.use(index.app)
+
+/* Connexion/deconnexion */
+app.use(signIn.app)
+app.use(signUp.app)
+
+/* Projects */
+app.use(listProjects.app)
+app.use(overviewProject.app)
+
+/* Issues */
+app.use(listIssues.app)
+
+/* Tasks */
+app.use(listTasks.app)
+
+/* Releases */
+
+/* Documentation */
+
+/* Tests */
+app.use(listTests.app)
+
+/* Sprints */
+app.use(listSprints.app)
+
+/* TESTS ZONE */
+
 const NUM_PORT = 3000
 
-app.listen(NUM_PORT, function () {
+app.listen(NUM_PORT, function() {
   console.log('App listening on port ' + NUM_PORT + '!')
 })

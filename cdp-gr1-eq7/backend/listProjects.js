@@ -1,49 +1,46 @@
 /* CONFIG */
 const express = require('express')
 const app = express()
+const session = require('express-session')
 
 /* REQUIRED */
 const path = require('path')
 const ejs = require('ejs')
 let bodyParser = require('body-parser')
 const db = require('./db_connection')
-const project = require('./classes/Project')
-const member = require('./classes/Member')
 const newProject = require('./newProject')
-const overviewProject = require('./overviewProject')
 
 /* USE THE REQUIRES */
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(express.static('../public')); // Mettre l'URL du dossier 'public' par rapport a initApp.js
 app.use(newProject.app)
-app.use(overviewProject.app)
+app.use(session({secret: 'shhhhhhared-secret', saveUninitialized: true,resave: true}))
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, './..', '/views'))
 
 const LIST_PROJECTS_ROUTE = '/listProjects'
-const NEW_PROJECT_ROUTE = '/newProject'
 const REMOVE_PROJECT_ROUTE = '/removeProject'
 
 const LIST_PROJECTS_VIEW_PATH = '../views/listProjects'
-const NEW_PROJECT_VIEW_PATH = '../views/newProject'
 
-let user = new member.Member ('user1', 'pwd1', [])
+let sess
 let listProjects = []
-let currentProject
 
 /* TESTS ZONE */
+/*let user = new member.Member ('User5', 'pwd1', [])
 let p1 = new project.Project ('p1', 'p1', 'id1', [], user)
 user.listProjects.push (p1)
 
 let m2 = new member.Member ('m2', 'pwd1', [])
 let p2 = new project.Project ('p2', 'p2', 'id2', [], m2)
-user.listProjects.push (p2)
+user.listProjects.push (p2)*/
 
 /* FUNCTIONS */
 
 function removeProject (id, listProjects){
   listProjects.forEach(project => {
-    if (project.id === id){
+    if (project.id == id){
       let index = listProjects.indexOf (project)
       listProjects.splice (index, 1)
     }
@@ -51,37 +48,20 @@ function removeProject (id, listProjects){
 }
 
 app.get (LIST_PROJECTS_ROUTE, function (req, res){
-  
-  console.log("COUCOU")
-  /*db._getProjectsIdsOfMember('user1').then(projectIds => {
-    //console.log(projectIds.length)
-    projectIds.forEach(id => {
-      console.log(id)
-      db._getProjectFromProjectId(id).then(project => {
-        //console.log(project.id)
-        listProjects.push(project)
-      })
-    })
-  })*/
+    listProjects = []
+    sess = req.session
 
-  /*db._getProjectsOfMember('User6').then(result => {
-    console.log(result.length)
-    result.forEach(element => {
-      listProjects.push(element)
-      console.log(listProjects.length)
-    })
-  })*/
+    db._getProjectsOfMember(sess.username).then(listProjectsMembers => {
+        listProjectsMembers.forEach(element => {
+            listProjects.push(element)
+        })
 
-  /*db._getProjectFromProjectId('8').then(project => {
-    console.log("yolo")
-    console.log(project.description)
-  })*/
+        res.render(LIST_PROJECTS_VIEW_PATH, {
+            session: sess,
+            listProjects: listProjects,
+        })
+    })
   
-  //currentProject = req.project
-  res.render (LIST_PROJECTS_VIEW_PATH, {
-    userProjects: listProjects,
-    user:user
-  })
 })
 // require newProject here causes an error if newProject requireq listProjects too
 /*app.get (NEW_PROJECT_ROUTE, function (req, res){
@@ -90,15 +70,15 @@ app.get (LIST_PROJECTS_ROUTE, function (req, res){
 
 app.post (REMOVE_PROJECT_ROUTE, function (req, res){
   const projectId = req.body.projectId;
-  removeProject (projectId, user.listProjects)
-  
-  db._deleteProject(user, projectId)
-  // TODO: récupérer l'id pour pouvoir màj les membres
-  
+  removeProject (projectId, listProjects)
+
   res.render (LIST_PROJECTS_VIEW_PATH, {
-    userProjects: user.listProjects,
-    user: user
+    session: sess,
+    listProjects: listProjects,
   })
+  
+  db._deleteProject(projectId)
 })
+
 
 module.exports.app = app
