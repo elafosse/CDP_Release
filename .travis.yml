@@ -1,4 +1,5 @@
 language: node_js
+<<<<<<< HEAD
 node_js:
   - 7
 
@@ -28,3 +29,5 @@ script:
 
 script:
 - "npm test"
+=======
+>>>>>>> 224663e762a1a77d43072326da5b83522f19d3ba
