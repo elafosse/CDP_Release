@@ -13,9 +13,15 @@ const modifySprint = require('./modifySprint')*/
 
 /* USE THE REQUIRES */
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(express.static('../public')); // Mettre l'URL du dossier 'public' par rapport a initApp.js
+app.use(express.static('../public')) // Mettre l'URL du dossier 'public' par rapport a initApp.js
 
-app.use(session({secret: 'shhhhhhared-secret', saveUninitialized: true,resave: true}))
+app.use(
+  session({
+    secret: 'shhhhhhared-secret',
+    saveUninitialized: true,
+    resave: true
+  })
+)
 /*app.use(newSprint.app)
 app.use(modifySprint.app)*/
 
@@ -34,47 +40,46 @@ let sess
 
 /* FUNCTIONS */
 
-function removeSprint (id, list){
+function removeSprint(id, list) {
   list.forEach(sprint => {
-    if (sprint.id == id){
-      let index = list.indexOf (sprint)
-      list.splice (index, 1)
+    if (sprint.id == id) {
+      let index = list.indexOf(sprint)
+      list.splice(index, 1)
     }
   })
 }
 
 app.get(LIST_SPRINTS_ROUTE, function(req, res) {
-  console.log("List Sprints")
   listSprints = []
   projectId = req.query.projectId
   sess = req.session
-  
-  db._getProjectFromProjectId(projectId).then(result =>{
+
+  db._getProjectFromProjectId(projectId).then(result => {
     currentProject = result
     /*db._getAllProjectSprints(result.id).then(Sprints => {
       sprints.forEach(sprint =>{
         listSprints.push(sprint)
       })*/
-      res.render(LIST_SPRINTS_VIEW_PATH, {
-        session: sess,
-        listSprints: listSprints,
-        project: currentProject,
-      })
+    res.render(LIST_SPRINTS_VIEW_PATH, {
+      session: sess,
+      listSprints: listSprints,
+      project: currentProject
+    })
     //})
   })
 })
 
 app.post(REMOVE_SPRINT_ROUTE, function(req, res) {
   console.log('Removed')
-  const sprintId = req.body.sprintId;
-  removeSprint (sprintId, listSprints)
+  const sprintId = req.body.sprintId
+  removeSprint(sprintId, listSprints)
   //db._deleteSprint(sprintId)
-  
+
   res.render(LIST_SPRINTS_VIEW_PATH, {
     session: sess,
     listSprints: listSprints,
     projectId: projectId,
-    project: currentProject,
+    project: currentProject
   })
 })
 

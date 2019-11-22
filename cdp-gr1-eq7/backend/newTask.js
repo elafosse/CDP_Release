@@ -102,6 +102,9 @@ app.get('/modifyTask', function(req, res) {
 })
 
 app.post('/modifyTask', function(req, res) {
+  console.log(req.body.taskIssue)
+  console.log(req.body.taskRequired)
+
   db._modifyTask(
     req.query.taskId,
     req.body.taskName,

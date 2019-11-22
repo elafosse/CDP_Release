@@ -24,13 +24,9 @@ var con = mysql.createConnection({
 function _createProject(name, description) {
   return new Promise(function(resolve, reject) {
     const sql = 'INSERT INTO project (name, description) VALUES ('.concat(
-      "'",
-      name,
-      "'",
+      con.escape(name),
       ',',
-      "'",
-      description,
-      "'",
+      con.escape(description),
       ')'
     )
     con.query(sql, function(err, result) {
@@ -45,7 +41,7 @@ function _createProject(name, description) {
 
 function _deleteProject(id) {
   return new Promise(function(resolve, reject) {
-    const sql = 'DELETE FROM project WHERE id = '.concat("'", id, "'")
+    const sql = 'DELETE FROM project WHERE id = '.concat(con.escape(id))
     con.query(sql, function(err, result) {
       if (err) resolve(err)
       resolve('Project Deleted')
@@ -66,13 +62,12 @@ function _inviteMembersToProject(projectId, usernameList, areAdminsList) {
     let sql = ''
     for (i = 0; i < usernameList.length; i++) {
       sql = sql.concat(
-        "INSERT INTO project_team (project_id, username, is_admin) VALUES ('",
-        projectId,
-        "','",
-        usernameList[i],
-        "'",
+        'INSERT INTO project_team (project_id, username, is_admin) VALUES (',
+        con.escape(projectId),
         ',',
-        areAdminsList[i],
+        con.escape(usernameList[i]),
+        ',',
+        con.escape(areAdminsList[i]),
         ');\n'
       )
     }
@@ -91,11 +86,10 @@ function _deleteMembersFromProject(projectId, usernameList) {
       // TODO: check if the user is not the admin of the project
       sql = sql.concat(
         'DELETE FROM project_team WHERE project_id = ',
-        projectId,
+        con.escape(projectId),
         ' and username = ',
-        "'",
-        usernameList[i],
-        "';\n"
+        con.escape(usernameList[i]),
+        ';\n'
       )
     }
     con.query(sql, function(err, result) {
@@ -107,9 +101,8 @@ function _deleteMembersFromProject(projectId, usernameList) {
 
 function _getMembersOfProject(project_id) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT username FROM project_team WHERE project_id = '".concat(
-      project_id,
-      "'"
+    const sql = 'SELECT username FROM project_team WHERE project_id = '.concat(
+      con.escape(project_id)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -124,9 +117,9 @@ function _getMembersOfProject(project_id) {
 
 function _getAdminsOfProject(project_id) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT username FROM project_team WHERE project_id = '".concat(
-      project_id,
-      "' and is_admin = '1'"
+    const sql = 'SELECT username FROM project_team WHERE project_id = '.concat(
+      con.escape(project_id),
+      " and is_admin = '1'"
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -147,11 +140,9 @@ function _storeMember(username, password) {
     bcrypt.hash(password, 10, function(err, hashedPassword) {
       if (err) throw err
       const sql = 'INSERT INTO member (username, password) VALUES ('.concat(
-        "'",
-        username,
-        "','",
-        hashedPassword,
-        "'",
+        con.escape(username),
+        ',',
+        con.escape(hashedPassword),
         ')'
       )
       con.query(sql, function(err, result) {
@@ -168,9 +159,8 @@ function _storeMember(username, password) {
 function _getProjectsIdsOfMember(username) {
   return new Promise(function(resolve, reject) {
     // TODO: Vérifier si le couple user/project_id n'existe pas déjà
-    const sql = "SELECT project_id FROM project_team WHERE username = '".concat(
-      username,
-      "'"
+    const sql = 'SELECT project_id FROM project_team WHERE username = '.concat(
+      con.escape(username)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -190,9 +180,8 @@ function _getProjectFromProjectId(project_id) {
         _getAdminsOfProject(project_id).then(
           admins => {
             const p = new Promise(function(resolve, reject) {
-              const sql = "SELECT * FROM project WHERE id = '".concat(
-                project_id,
-                "'"
+              const sql = 'SELECT * FROM project WHERE id = '.concat(
+                con.escape(project_id)
               )
               con.query(sql, function(err, result) {
                 if (err) {
@@ -248,9 +237,8 @@ function _getProjectsOfMember(username) {
 function _getTaskIdsAssignedToMember(username) {
   return new Promise(function(resolve, reject) {
     // TODO: Vérifier si le couple user/project_id n'existe pas déjà
-    const sql = "SELECT task_id FROM assigned_task WHERE username = '".concat(
-      username,
-      "'"
+    const sql = 'SELECT task_id FROM assigned_task WHERE username = '.concat(
+      con.escape(username)
     )
     con.query(sql, function(err, result) {
       if (err) {
@@ -268,7 +256,9 @@ function _getTaskIdsAssignedToMember(username) {
 
 function _areUsernameAndPasswordCorrect(username, password) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT * FROM member WHERE username = '".concat(username, "'")
+    const sql = 'SELECT * FROM member WHERE username = '.concat(
+      con.escape(username)
+    )
     con.query(sql, function(err, result) {
       if (err) {
         reject(err)
@@ -293,9 +283,8 @@ function _areUsernameAndPasswordCorrect(username, password) {
 
 function _doesUsernameExists(username) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT username FROM member WHERE username = '".concat(
-      username,
-      "'"
+    const sql = 'SELECT username FROM member WHERE username = '.concat(
+      con.escape(username)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -310,7 +299,9 @@ function _doesUsernameExists(username) {
 
 function _deleteMember(username) {
   return new Promise(function(resolve, reject) {
-    const sql = "DELETE FROM member WHERE username = '".concat(username, "'")
+    const sql = 'DELETE FROM member WHERE username = '.concat(
+      con.escape(username)
+    )
     con.query(sql, function(err, result) {
       if (err) reject(err)
       resolve('Member deleted')
@@ -318,43 +309,7 @@ function _deleteMember(username) {
   })
 }
 
-/* function _isUsernameAvailable(username) {
-    return new Promise(function (resolve, reject) {
-        let sql = "SELECT username FROM member WHERE username = '"
-            .concat(username, "\'");
-        con.query(sql, function (err, result) {
-            if (err) reject(err);
-            if (result === []) {
-                resolve(true);
-            }
-            else {
-                resolve(false);
-            }
-        });
-    });
-}
-*/
-
 // ================ Issues ================
-
-/*
-function f(name) {
-    return new Promise(function (resolve, reject) {
-
-    });
-}
-
-f("hello").then((valeur) => {
-    console.log(valeur);
-}, (raison) => {
-    console.log("Pas ajouté");
-});
-
-f("User5").then((valeur) => {
-    console.log(valeur);
-})
-
-*/
 
 function _addIssueToProject(
   projectId,
@@ -365,16 +320,15 @@ function _addIssueToProject(
 ) {
   return new Promise(function(resolve, reject) {
     const sql = 'INSERT INTO issue (project_id, name, description, priority, difficulty) VALUES ('.concat(
-      "'",
-      projectId,
-      "','",
-      name,
-      "','",
-      description,
-      "','",
-      priority,
-      "',",
-      difficulty,
+      con.escape(projectId),
+      ',',
+      con.escape(name),
+      ',',
+      con.escape(description),
+      ',',
+      con.escape(priority),
+      ',',
+      con.escape(difficulty),
       ')'
     )
     con.query(sql, function(err, result) {
@@ -390,21 +344,20 @@ function _addIssueToProject(
 function _modifyIssue(issueId, name, description, priority, difficulty) {
   return new Promise(function(resolve, reject) {
     var sql = 'UPDATE issue SET'.concat(
-      " name = '",
-      name,
-      "',",
-      " description = '",
-      description,
-      "',",
-      " priority = '",
-      priority,
-      "',",
-      " difficulty = '",
-      difficulty,
-      "'",
-      " WHERE id = '",
-      issueId,
-      "';\n"
+      ' name = ',
+      con.escape(name),
+      ',',
+      ' description = ',
+      con.escape(description),
+      ',',
+      ' priority = ',
+      con.escape(priority),
+      ',',
+      ' difficulty = ',
+      con.escape(difficulty),
+      ' WHERE id = ',
+      con.escape(issueId),
+      ';\n'
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -415,9 +368,8 @@ function _modifyIssue(issueId, name, description, priority, difficulty) {
 
 function _getAllProjectIssues(project_id) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT * FROM issue WHERE project_id = '".concat(
-      project_id,
-      "'"
+    const sql = 'SELECT * FROM issue WHERE project_id = '.concat(
+      con.escape(project_id)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -441,7 +393,7 @@ function _getAllProjectIssues(project_id) {
 
 function _deleteIssue(issueId) {
   return new Promise(function(resolve, reject) {
-    const sql = "DELETE FROM issue WHERE id = '".concat(issueId, "'")
+    const sql = 'DELETE FROM issue WHERE id = '.concat(con.escape(issueId))
     con.query(sql, function(err, result) {
       if (err) reject(err)
       resolve('Issue removed')
@@ -451,7 +403,7 @@ function _deleteIssue(issueId) {
 
 function _getIssueById(issueId) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT * FROM issue WHERE id = '".concat(issueId, "'")
+    const sql = 'SELECT * FROM issue WHERE id = '.concat(con.escape(issueId))
     con.query(sql, function(err, result) {
       if (err) reject(err)
       const issue = new Issue.Issue(
@@ -471,9 +423,8 @@ function _getIssueById(issueId) {
 
 function _getAllTasksIdsByProject(project_id) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT id FROM task WHERE project_id = '".concat(
-      project_id,
-      "'"
+    const sql = 'SELECT id FROM task WHERE project_id = '.concat(
+      con.escape(project_id)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -488,12 +439,10 @@ function _getAllTasksIdsByProject(project_id) {
 
 function _getAllTasksIdsByProjectAndState(project_id, state) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT id FROM task WHERE project_id = '".concat(
-      project_id,
-      "'",
-      "AND state = '",
-      state,
-      "'"
+    const sql = 'SELECT id FROM task WHERE project_id = '.concat(
+      con.escape(project_id),
+      ' AND state = ',
+      con.escape(state)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -512,7 +461,9 @@ function _getTaskById(task_id) {
       issues => {
         _getMembersAssignedToTask(task_id).then(members => {
           _getTaskDependencies(task_id).then(dependencies => {
-            const sql = "SELECT * FROM task WHERE id = '".concat(task_id, "'")
+            const sql = 'SELECT * FROM task WHERE id = '.concat(
+              con.escape(task_id)
+            )
             con.query(sql, function(err, result) {
               if (err) reject(err)
               const task = new Task.Task(
@@ -594,33 +545,19 @@ function _addTask(
 ) {
   return new Promise(function(resolve, reject) {
     const sql = 'INSERT INTO task (project_id, name, description, state, start_date, realisation_time, description_of_done) VALUES ('.concat(
-      "'",
-      projectId,
-      "'",
+      con.escape(projectId),
       ',',
-      "'",
-      name,
-      "'",
+      con.escape(name),
       ',',
-      "'",
-      description,
-      "'",
+      con.escape(description),
       ',',
-      "'",
-      state,
-      "'",
+      con.escape(state),
       ',',
-      "'",
-      date_beginning,
-      "'",
+      con.escape(date_beginning),
       ',',
-      "'",
-      realisation_time,
-      "'",
+      con.escape(realisation_time),
       ',',
-      "'",
-      DoD,
-      "'",
+      con.escape(DoD),
       ');'
     )
     con.query(sql, function(err, result) {
@@ -645,27 +582,26 @@ function _modifyTask(
 ) {
   return new Promise(function(resolve, reject) {
     var sql = 'UPDATE task SET'.concat(
-      " name = '",
-      name,
-      "',",
-      " description = '",
-      description,
-      "',",
-      " state = '",
-      state,
-      "',",
-      " start_date = '",
-      startDate,
-      "',",
-      " realisation_time = '",
-      realisationTime,
-      "',",
-      " description_of_done = '",
-      DoD,
-      "'",
-      " WHERE id = '",
-      taskId,
-      "';\n"
+      ' name = ',
+      con.escape(name),
+      ',',
+      ' description = ',
+      con.escape(description),
+      ',',
+      ' state = ',
+      con.escape(state),
+      ',',
+      ' start_date = ',
+      con.escape(startDate),
+      ',',
+      ' realisation_time = ',
+      con.escape(realisationTime),
+      ',',
+      ' description_of_done = ',
+      con.escape(DoD),
+      ' WHERE id = ',
+      con.escape(taskId),
+      ';\n'
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -676,21 +612,17 @@ function _modifyTask(
 
 function _setTaskDependencies(taskId, dependsOnTasksIdList) {
   return new Promise(function(resolve, reject) {
-    var sql = "DELETE FROM task_dependencies WHERE task_id = '".concat(
-      taskId,
-      "';\n"
+    var sql = 'DELETE FROM task_dependencies WHERE task_id = '.concat(
+      con.escape(taskId),
+      ';\n'
     )
     if (dependsOnTasksIdList) {
       for (let i = 0; i < dependsOnTasksIdList.length; i++) {
         sql = sql.concat(
           'INSERT INTO task_dependencies (task_id, depend_on_task_id) VALUES (',
-          "'",
-          taskId,
-          "'",
+          con.escape(taskId),
           ',',
-          "'",
-          dependsOnTasksIdList[i],
-          "'",
+          con.escape(dependsOnTasksIdList[i]),
           '); \n'
         )
       }
@@ -708,28 +640,26 @@ function _setTaskToMembers(taskId, usernameList) {
   // TODO : check if username exists
   return new Promise(function(resolve, reject) {
     let i
-    let sql = "DELETE FROM assigned_task WHERE task_id = '".concat(
-      taskId,
-      "';\n"
+    let sql = 'DELETE FROM assigned_task WHERE task_id = '.concat(
+      con.escape(taskId),
+      ';\n'
     )
     if (usernameList) {
       if (typeof usernameList === 'string') {
         sql = sql.concat(
-          "INSERT INTO assigned_task (task_id, username) VALUES ('",
-          taskId,
-          "','",
-          usernameList,
-          "'",
+          'INSERT INTO assigned_task (task_id, username) VALUES (',
+          con.escape(taskId),
+          ',',
+          con.escape(usernameList),
           ');\n'
         )
       } else {
         for (i = 0; i < usernameList.length; i++) {
           sql = sql.concat(
-            "INSERT INTO assigned_task (task_id, username) VALUES ('",
-            taskId,
-            "','",
-            usernameList[i],
-            "'",
+            'INSERT INTO assigned_task (task_id, username) VALUES (',
+            con.escape(taskId),
+            ',',
+            con.escape(usernameList[i]),
             ');\n'
           )
         }
@@ -746,9 +676,8 @@ function _setTaskToMembers(taskId, usernameList) {
 
 function _getMembersAssignedToTask(taskId) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT username FROM assigned_task WHERE task_id = '".concat(
-      taskId,
-      "'"
+    const sql = 'SELECT username FROM assigned_task WHERE task_id = '.concat(
+      con.escape(taskId)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -763,9 +692,9 @@ function _getMembersAssignedToTask(taskId) {
 
 function _getTaskDependencies(taskId) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT * FROM task WHERE id IN (SELECT depend_on_task_id FROM task_dependencies WHERE task_id ='".concat(
-      taskId,
-      "')"
+    const sql = 'SELECT * FROM task WHERE id IN (SELECT depend_on_task_id FROM task_dependencies WHERE task_id ='.concat(
+      con.escape(taskId),
+      ')'
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -794,14 +723,7 @@ function _getTaskDependencies(taskId) {
 
 function _updateTaskState(taskId, state) {
   return new Promise(function(resolve, reject) {
-    var sql = 'UPDATE task SET state = '.concat(
-      "'",
-      state,
-      "'",
-      " WHERE id = '",
-      taskId,
-      "'"
-    )
+    var sql = 'UPDATE task SET state = '.concat(state, ' WHERE id = ', taskId)
     con.query(sql, function(err, result) {
       if (err) reject(err)
       resolve(result.affectedRows)
@@ -811,7 +733,7 @@ function _updateTaskState(taskId, state) {
 
 function _deleteTask(taskId) {
   return new Promise(function(resolve, reject) {
-    const sql = "DELETE FROM task WHERE id = '".concat(taskId, "'")
+    const sql = 'DELETE FROM task WHERE id = '.concat(con.escape(taskId))
     con.query(sql, function(err, result) {
       if (err) reject(err)
       resolve('Issue removed')
@@ -822,18 +744,17 @@ function _deleteTask(taskId) {
 function _setTaskToIssue(task_id, issueId_list) {
   return new Promise(function(resolve, reject) {
     let i = 0
-    var sql = "DELETE FROM issue_of_task WHERE task_id = '".concat(
-      task_id,
-      "';\n"
+    var sql = 'DELETE FROM issue_of_task WHERE task_id = '.concat(
+      con.escape(task_id),
+      ';\n'
     )
     if (issueId_list) {
       for (i = 0; i < issueId_list.length; i++) {
         sql = sql.concat(
-          "INSERT INTO issue_of_task (task_id, issue_id) VALUES ('",
-          task_id,
-          "','",
-          issueId_list[i],
-          "'",
+          'INSERT INTO issue_of_task (task_id, issue_id) VALUES (',
+          con.escape(task_id),
+          ',',
+          con.escape(issueId_list[i]),
           ');\n'
         )
       }
@@ -849,9 +770,8 @@ function _setTaskToIssue(task_id, issueId_list) {
 
 function _getIssuesIdsOfTask(task_id) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT issue_id FROM issue_of_task WHERE task_id = '".concat(
-      task_id,
-      "'"
+    const sql = 'SELECT issue_id FROM issue_of_task WHERE task_id = '.concat(
+      con.escape(task_id)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -888,12 +808,12 @@ function _getIssuesOfTask(task_id) {
 
 function _setTaskChecklist(taskId, description, isDone) {
   return new Promise(function(resolve, reject) {
-    const sql = "INSERT INTO task_checklist (task_id, description, is_done) VALUES ('".concat(
-      taskId,
-      "','",
-      description,
-      "',",
-      isDone,
+    const sql = 'INSERT INTO task_checklist (task_id, description, is_done) VALUES ('.concat(
+      con.escape(taskId),
+      ',',
+      con.escape(description),
+      ',',
+      con.escape(isDone),
       ');\n'
     )
     con.query(sql, function(err, result) {
@@ -909,11 +829,10 @@ function _setTaskChecklist(taskId, description, isDone) {
 function _modifyTaskDescription(checklistId, description) {
   return new Promise(function(resolve, reject) {
     var sql = 'UPDATE task_checklist SET '.concat(
-      "description = '",
-      description,
-      "'  WHERE id = '",
-      checklistId,
-      "'"
+      'description = ',
+      con.escape(description),
+      '  WHERE id = ',
+      con.escape(checklistId)
     )
     con.query(sql, function(err, result) {
       if (err) {
@@ -929,10 +848,9 @@ function _modifyTaskState(checklistId, isDone) {
   return new Promise(function(resolve, reject) {
     var sql = 'UPDATE task_checklist SET '.concat(
       'is_done = ',
-      isDone,
-      " WHERE id = '",
-      checklistId,
-      "'"
+      con.escape(isDone),
+      ' WHERE id = ',
+      con.escape(checklistId)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -943,9 +861,8 @@ function _modifyTaskState(checklistId, isDone) {
 
 function _getTaskChecklist(task_id) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT * FROM task_checklist WHERE task_id = '".concat(
-      task_id,
-      "'"
+    const sql = 'SELECT * FROM task_checklist WHERE task_id = '.concat(
+      con.escape(task_id)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -960,7 +877,9 @@ function _getTaskChecklist(task_id) {
 
 function _getChecklistItemById(itemId) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT * FROM task_checklist WHERE id = '".concat(itemId, "'")
+    const sql = 'SELECT * FROM task_checklist WHERE id = '.concat(
+      con.escape(itemId)
+    )
     con.query(sql, function(err, result) {
       if (err) reject(err)
       const id_list = []
@@ -984,21 +903,22 @@ function _addTest(
 ) {
   return new Promise(function(resolve, reject) {
     const sql = 'INSERT INTO test (project_id, name, description, expected_result, last_version_validated, state) VALUES ('.concat(
-      "'",
-      projectId,
-      "','",
-      name,
-      "','",
-      description,
-      "','",
-      expected_result,
-      "','",
-      last_version_validated,
-      "','",
-      state,
-      "'",
+      '',
+      con.escape(projectId),
+      ',',
+      con.escape(name),
+      ',',
+      con.escape(description),
+      ',',
+      con.escape(expected_result),
+      ',',
+      con.escape(last_version_validated),
+      ',',
+      con.escape(state),
+      '',
       ')'
     )
+    console.log(sql)
     con.query(sql, function(err, result) {
       if (err) {
         console.log('New test added')
@@ -1014,7 +934,7 @@ function _getTestById(test_id) {
   return new Promise(function(resolve, reject) {
     _getIssuesOfTest(test_id).then(
       issues => {
-        const sql = "SELECT * FROM test WHERE id = '".concat(test_id, "'")
+        const sql = 'SELECT * FROM test WHERE id = '.concat(con.escape(test_id))
         con.query(sql, function(err, result) {
           if (err) reject(err)
           const test = new Test.Test(
@@ -1040,17 +960,16 @@ function _getTestById(test_id) {
 function _setIssuesToTest(test_id, issueId_list) {
   return new Promise(function(resolve, reject) {
     let i = 0
-    var sql = "DELETE FROM issue_of_test WHERE test_id = '".concat(
-      test_id,
-      "';\n"
+    var sql = 'DELETE FROM issue_of_test WHERE test_id = '.concat(
+      con.escape(test_id),
+      ';\n'
     )
     for (i = 0; i < issueId_list.length; i++) {
       sql = sql.concat(
-        "INSERT INTO issue_of_test (test_id, issue_id) VALUES ('",
-        test_id,
-        "','",
-        issueId_list[i],
-        "'",
+        'INSERT INTO issue_of_test (test_id, issue_id) VALUES (',
+        con.escape(test_id),
+        ',',
+        con.escape(issueId_list[i]),
         ');\n'
       )
     }
@@ -1064,9 +983,8 @@ function _setIssuesToTest(test_id, issueId_list) {
 
 function _getIssuesIdsOfTest(test_id) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT issue_id FROM issue_of_test WHERE test_id = '".concat(
-      test_id,
-      "'"
+    const sql = 'SELECT issue_id FROM issue_of_test WHERE test_id = '.concat(
+      con.escape(test_id)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -1101,7 +1019,7 @@ function _getIssuesOfTest(test_id) {
 
 function _deleteTest(test_id) {
   return new Promise(function(resolve, reject) {
-    const sql = "DELETE FROM test WHERE id = '".concat(test_id, "'")
+    const sql = 'DELETE FROM test WHERE id = '.concat(con.escape(test_id))
     con.query(sql, function(err, result) {
       if (err) reject(err)
       resolve('Test removed')
@@ -1119,28 +1037,30 @@ function _modifyTest(
 ) {
   return new Promise(function(resolve, reject) {
     var sql = 'UPDATE test SET'.concat(
-      " name = '",
-      name,
-      "',",
-      " description = '",
-      description,
-      "',",
-      " expected_result = '",
-      expected_result,
-      "',",
-      " last_version_validated = '",
-      last_version_validated,
-      "',",
-      " state = '",
-      state,
-      "'",
-      " WHERE id = '",
-      testId,
-      "';\n"
+      ' name = ',
+      con.escape(name),
+      ',',
+      ' description = ',
+      con.escape(description),
+      ',',
+      ' expected_result = ',
+      con.escape(expected_result),
+      ',',
+      ' last_version_validated = ',
+      con.escape(last_version_validated),
+      ',',
+      ' state = ',
+      con.escape(state),
+      ' WHERE id = ',
+      con.escape(testId),
+      ';\n'
     )
     con.query(sql, function(err, result) {
       console.log('Test updated')
-      if (err) reject(err)
+      if (err) {
+        reject(err)
+        return
+      }
       resolve(result.affectedRows)
     })
   })
@@ -1148,9 +1068,8 @@ function _modifyTest(
 
 function _getAllTestsIdsFromProject(project_id) {
   return new Promise(function(resolve, reject) {
-    const sql = "SELECT id FROM test WHERE project_id = '".concat(
-      project_id,
-      "'"
+    const sql = 'SELECT id FROM test WHERE project_id = '.concat(
+      con.escape(project_id)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
@@ -1186,12 +1105,9 @@ function _getAllTestsFromProject(project_id) {
 function _updateTestState(testId, state) {
   return new Promise(function(resolve, reject) {
     var sql = 'UPDATE test SET state = '.concat(
-      "'",
-      state,
-      "'",
-      " WHERE id = '",
-      testId,
-      "'"
+      con.escape(state),
+      ' WHERE id = ',
+      con.escape(testId)
     )
     con.query(sql, function(err, result) {
       if (err) reject(err)
