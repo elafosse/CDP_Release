@@ -6,6 +6,9 @@ Group members:
 * LAFOSSE Estelle
 * MENAN Jimmy
 
+Comme le Sonar ne s'affiche pas directement dans le GitHub, voici le lien : https://sonarcloud.io/dashboard?id=elafosse_CDP_Release
+A noter que nous n'avons pas réussi à faire en sorte que Sonar ne prenne pas en compte les fichiers test générés par Selenium.
+
 Définitions
 ===
 **Projet :** Un projet a un nom, une liste de membres, une liste d'issues, de tâches et une description.
