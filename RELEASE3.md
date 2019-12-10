@@ -30,6 +30,7 @@ Il aurait également été préférable de voir l'analyse Sonar du git directeme
 | **I20** |         Ajouter/Supprimer/Modifier Sprint        |**En tant que** créateur du projet, **je souhaite** pouvoir ajouter un sprint en appuyant sur un bouton "Ajouter Sprint", puis en spécifiant : <li> un identifiant <li> un nom <li> une description <li> une date de début <li> une durée <li> un état <li> ajouter des issues à la liste des issues à implémenter durant ce sprint en les sélectionnant en cochant les issues concernées <li> supprimer des issues de la liste des issues à implémenter durant ce sprint.</li> modifier un sprint en cliquant sur un bouton "Modifier" à côté du sprint correspondant, et supprimer un sprint en cliquant sur un bouton "Supprimer" puis en confirmant mon choix **afin de** permettre aux membres du projet de savoir quelles issues il faut implémenter prochainement, et suivre l'avancement du projet.| 8          | Basse    |  2  |
 
 **Liste des issues non réalisées au sprint 3 :**
+
 | Id  | Nom | Description | Difficulté | Priorité |
 |---|:---:|:---|:---:|:---:|
 | **I21** |        Notification        |**En tant que** membre du projet **je souhaite** recevoir des notifications concernant <li> mon ajout à un projet <li> la fin d'un sprint <li> quand un sprint est créé</li> **afin de** suivre l'avancement des projets sur lesquels je travaille| 13          | Basse    |  3  |
