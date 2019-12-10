@@ -1,71 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+
+<head>
+  <meta charset="utf-8" />
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>-->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossorigin="anonymous"
-    />
-    <script defer src="../backend/listSprints.js"></script>
-    <meta name="author" content="gr1_eq7" />
-  </head>
-  <body>
-    <%- include ../views/partials/header.ejs %>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <script defer src="../backend/listSprints.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/project.css" />
+  <title><%=project.name + " | sprints"%></title>
+  <meta name="author" content="gr1_eq7" />
+</head>
 
-    <div class="row">
-      <% include ./projectSidebar %>
-      <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 col-xl-9">
-        <br />
-        <h1>List of Sprints</h1>
-        <hr />
-        <a
-          type="button"
-          href="/newIssue?projectId=<%= project.id%>"
-          class="btn btn-success btn-lg"
-          >Nouveau sprint</a
-        >
+<body>
+  <%- include ../views/partials/header.ejs %>
 
+  <div class="row">
+    <% include ./projectSidebar %>
+    <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 col-xl-9">
+      <br>
+      <h1>List of Sprints</h1>
+      <hr>
+      <% let i = 1 %>
+      <% listSprints.forEach(sprint => { %>
+      <div id="accordion" role="tablist" aria-multiselectable="true">
         <ul class="list-unstyled">
-          <% listSprints.forEach(sprint => { %>
           <li>
-            <%= sprint.id + ': '%> <%= sprint.name %><br />
-            Issues du sprint :
-            <ul class="list-unstyled">
-              <% sprint.listIssuesSprint.forEach(issue => { %>
-              <li id="listIssuesSprint"><%= issue.id + ': ' + issue.name %></li>
-              <% }); %>
-            </ul>
-            <a
-              type="button"
-              href="/modifyIssue?projectId=<%= project.id%>&sprintId=<%= sprint.id %>"
-              class="btn btn-success btn-lg"
-              >Modifier</a
-            >
-            <form action="/removeIssue?projectId=<% project.id%>" method="post">
-              <input
-                type="text"
-                name="issueId"
-                class="form-control"
-                id="name"
-                value="<%= sprint.id %>"
-                hidden
-              />
-              <button
-                type="submit"
-                class="btn btn-primary"
-                formaction="/removeIssue"
-              >
-                Supprimer
-              </button>
-            </form>
+            <div class="card">
+              <h5 class="card-header anchor" <% if(sprint.id === currentSprintId) { %>style="background-color:khaki"
+                <% }%> role="tab" id="heading<%= sprint.id %>">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse<%= sprint.id %>" aria-expanded="true"
+                  aria-controls="collapse<%= sprint.id %>" class="d-block">
+                  <i class="fa fa-chevron-down pull-right">Sprint <%= i %></i>
+                  <span class="badge badge-primary right"><%= sprint.date_end.toDateString() %><br /></span>
+                  <span class="badge badge-primary right"><%= sprint.date_begin.toDateString() %><br /></span>
+                </a>
+              </h5>
+
+              <div id="collapse<%= sprint.id %>" class="collapse" role="tabpanel"
+                aria-labelledby="heading<%= sprint.id %>">
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                      <strong> Objective :</strong>
+                      <p>
+                        <%= sprint.objective %>
+                      </p>
+                    </li>
+                    <li class="list-group-item">
+
+                      <strong> Issues :</strong>
+                      <% sprint.listIssues.forEach(issue => { %>
+                      <p>
+                        <a
+                          href="/listIssues?projectId=<%= project.id + "&focusOn=" + issue.id + "#heading" + issue.id%>">
+                          <span class="badge badge-primary">I<%= issue.id %><br /></span> <%= issue.name %>
+                        </a>
+                      </p>
+                      <% }) %>
+                    <li class="list-group-item">
+                      <strong> Tasks :</strong>
+                      <div class="container">
+                        <div class="row">
+                          <div class="col-md-4">
+                            To Do
+                            <% sprint.taskToDo.forEach(task => { %>
+                            <div class="card" style="width: 18rem;">
+                              <div class="card-body">
+                                <h5 class="card-title"><%= task.name %></h5>
+                                <h6 class="card-subtitle mb-2 text-muted"><%= task.description %></h6>
+                              </div>
+                            </div>
+                            <% }) %>
+                          </div>
+                          <div class="col-md-4">
+                            Doing
+                            <% sprint.taskDoing.forEach(task => { %>
+                            <div class="card" style="width: 18rem;">
+                              <div class="card-body">
+                                <h5 class="card-title"><%= task.name %></h5>
+                                <h6 class="card-subtitle mb-2 text-muted"><%= task.description %></h6>
+                              </div>
+                            </div>
+                            <% }) %>
+                          </div>
+                          <div class="col-md-4">
+                            Done
+                            <% sprint.taskDone.forEach(task => { %>
+                            <div class="card" style="width: 18rem;">
+                              <div class="card-body">
+                                <h5 class="card-title"><%= task.name %></h5>
+                                <h6 class="card-subtitle mb-2 text-muted"><%= task.description %></h6>
+                              </div>
+                            </div>
+                            <% }) %>
+                            <% var percent = 0; var numberOfTasks = sprint.numberOfTasks; %>
+                            <% if( numberOfTasks != 0) {    %>
+                            <% percent = sprint.taskDone.length / (numberOfTasks)*100 }%>
+                          </div>
+                        </div>
+                      </div>
+                      </br>
+
+                      <div class="progress">
+                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                          role="progressbar" style="width: <%= percent%>%;" aria-valuenow="25" aria-valuemin="0"
+                          aria-valuemax="100"><%= percent.toFixed(0)%>%</div>
+                      </div>
+                    </li>
+
+                    <li class="list-group-item">
+                      <form action="/deleteSprint" method="post"
+                        onsubmit="return confirm('Do you really want to remove this sprint ?')">
+                        <input type="text" name="sprintId" class="form-control" id="name" value="<%= sprint.id %>"
+                          hidden />
+                        <button type="submit" class="btn btn-outline-danger float-right"
+                          formaction="/deleteSprint">&#x274C;</button>
+                      </form>
+                      <a href="/modifySprint?sprintId=<%= sprint.id %>"
+                        class="btn btn-outline-warning float-right">&#9998;</a>
+                    </li>
           </li>
-          <% }); %>
         </ul>
       </div>
     </div>
-  </body>
+  </div>
+  </li>
+  </ul>
+  </div>
+
+  <% i++}) %>
+
+  <p>
+    <a class="btn btn-primary" data-toggle="collapse" href="#collapseAddSprint" role="button" aria-expanded="false"
+      aria-controls="collapseAddSprint">
+      Add Sprint
+    </a>
+  </p>
+  <form action="/addSprint" method="post">
+    <div class="collapse" id="collapseAddSprint">
+      <div id="addNewSprint" class="card form-group">
+        <h5 class="card-header" id="headingAddSprint">
+          <i class="fa fa-chevron-down pull-right"></i>
+          <div class="form-row form-inline">
+            <label class="col-form-label" for="sprintName">
+              New Sprint
+            </label>
+          </div>
+        </h5>
+
+        <div id="collapseAddSprint" class="collapse show" role="tabpanel" aria-labelledby="headingAddSprint">
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <label class="col-form-label" for="sprintObjective"><strong> Sprint Objective : </strong></label>
+                <textarea class="form-control" id="sprintObjective" type="text" name="sprintObjective"
+                  placeholder="Objective" required></textarea>
+              </li>
+
+              <li class="list-group-item">
+                <label class="col-form-label"><strong> Issues to finish : </strong></label>
+                <br>
+                <select multiple class="form-control" id="sprintIssue" name="sprintIssue">
+                  <% projectIssues.forEach(issue => { %>
+                  <option value="<%= issue.id %>"><%= issue.name %></option>
+                  <% }) %>
+                </select>
+              </li>
+
+
+              <li class="list-group-item">
+                <div class="form-group row">
+                  <label for="example-date-input" class="col-2 col-form-label">Sprint start on :</label>
+                  <div class="col-4">
+                    <input class="form-control" type="date" id="date_begin" name="date_begin" required>
+                  </div>
+                  <label for="example-date-input" class="col-2 col-form-label">Sprint end on :</label>
+                  <div class="col-4">
+                    <input class="form-control" type="date" id="date_end" name="date_end" required>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <button type="submit" href="" class="btn btn-outline-success float-right">
+                  &#10004;
+                </button>
+              </li>
+
+            </ul>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  </div>
+  </div>
+</body>
+
 </html>

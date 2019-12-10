@@ -1,0 +1,29 @@
+version: '3'
+services:
+  mysql:
+    build:
+      context: ./cdp-gr1-eq7/database
+    environment:
+      MYSQL_HOST: localhost
+      MYSQL_DATABASE: scrumhelper
+      MYSQL_USER: username
+      MYSQL_PASSWORD: thisisatest
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+    networks:
+      - scrum-network
+  scrumhelper:
+    build: ./cdp-gr1-eq7
+    ports:
+     - "3000:3000"
+    depends_on:
+     - mysql
+    environment:
+     - DATABASE_HOST=mysql
+    networks:
+      - scrum-network
+networks:
+  scrum-network:
+    driver: bridge

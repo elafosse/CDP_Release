@@ -4,7 +4,6 @@ const app = express()
 
 /* REQUIRED */
 const path = require('path')
-const ejs = require('ejs')
 let bodyParser = require('body-parser')
 const db = require('./db_connection')
 const session = require('express-session')
@@ -31,31 +30,21 @@ const MODIFY_TEST_REDIRECT_URL = '/listTests?projectId='
 
 let listIssuesTest = []
 
-/* TESTS ZONE */
-/*const Test = require('./classes/Test')
-
-const issue = require('./classes/Issue')
-const i1 = new issue.Issue('i1', 'i1', '1', 'id1', '1', '1')
-listIssuesTest.push(i1)
-
-const t2 = new Test.Test(
-  'id2',
-  'projectId',
-  't2',
-  'test 2',
-  're 2',
-  'v 0.0.1',
-  'todo',
-  listIssuesTest
-)*/
-
 /* FUNCTIONS*/
+
 let test
 let testId
 let projectId
 let sess
 let listIssues = []
 
+/**
+ * Return an array of the issues id of a list of issues that have been checked
+ * by the user in the form.
+ * @param {object} req - Used to get the issues checked by the user in the form.
+ * @param {Array} listIssues - The list of issues of the test.
+ * @returns {Array}
+ */
 function isChecked(req, listIssues) {
   let result = []
   listIssues.forEach(issue => {
@@ -66,6 +55,13 @@ function isChecked(req, listIssues) {
   return result
 }
 
+/**
+ * Render the form to modify a test.
+ * The fields are filled with the information on the test that are in the database.
+ * MODIFY_TEST_ROUTE is the route of the page.
+ * MODIFY_TEST_VIEW_PATH is the path to the view of this route.
+ * function is the function applied to this route.
+ */
 app.get(MODIFY_TEST_ROUTE, function(req, res) {
   projectId = req.query.projectId
   testId = req.query.testId
@@ -79,10 +75,10 @@ app.get(MODIFY_TEST_ROUTE, function(req, res) {
     db._getAllProjectIssues(projectId).then(issues => {
       listIssues = issues
       db._getIssuesIdsOfTest(testId).then(issuesTest => {
-        listIssuesIdsTest = issuesTest
+        const listIssuesIdsTest = issuesTest
         res.render(MODIFY_TEST_VIEW_PATH, {
           listIssues: listIssues,
-          listIssuesTest: listIssuesIdsTest,
+          listIssuesIdsTest: listIssuesIdsTest,
           project: sess.project,
           session: sess,
           test: test
@@ -92,6 +88,14 @@ app.get(MODIFY_TEST_ROUTE, function(req, res) {
   })
 })
 
+/**
+ * Update the test in the database with the information entered by the user in the form.
+ * The fields are filled with the information on the test that are in the database.
+ * Render the list of the tests of the project.
+ * MODIFY_TEST_ROUTE is the route to modify a test.
+ * MODIFY_TEST_REDIRECT_URL is the string representing the URL of the list of tests.
+ * function is the function applied to this route.
+ */
 app.post(MODIFY_TEST_ROUTE, function(req, res) {
   let newName = req.body.testName
   let newDescription = req.body.testDescription

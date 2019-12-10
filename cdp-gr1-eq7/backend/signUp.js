@@ -15,10 +15,21 @@ const SIGNUP_VIEW_PATH = '../views/signUp'
 const SIGNIN_VIEW_PATH = '../views/signIn'
 const STORE_USER = '/signUp'
 
+/**
+ * Renders the signUp page
+ * SIGNUP_ROUTE is the route of the signUp view
+ */
 app.get(SIGNUP_ROUTE, function(req, res) {
   res.render(SIGNUP_VIEW_PATH)
 })
 
+/**
+ * Called when a user clic on the Sign Up button. A new user is stored to the database.
+ * @param {string} username The username of the user
+ * @param {string} password The password of the user
+ * @param {string} confirmedPassword The password written a second time for confirmation
+
+ */
 app.post(STORE_USER, function(req, res) {
   const username = req.body.username
   const password = req.body.password

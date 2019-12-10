@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: listTests.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: listTests.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* eslint-disable space-before-function-paren */
+/* CONFIG */
+const express = require('express')
+const app = express()
+
+/* REQUIRED */
+const path = require('path')
+const bodyParser = require('body-parser')
+const db = require('./db_connection')
+const session = require('express-session')
+
+const modifyTest = require('./modifyTest')
+
+/* USE THE REQUIRES */
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(express.static('../public')) // Mettre l'URL du dossier 'public' par rapport a initApp.js
+app.use(
+  session({
+    secret: 'shhhhhhared-secret',
+    saveUninitialized: true,
+    resave: true
+  })
+)
+app.use(modifyTest.app)
+
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, './..', '/views'))
+
+const LIST_TEST_ROUTE = '/listTests'
+const REMOVE_TEST_ROUTE = '/removeTest'
+const CREATE_TEST_ROUTE = '/createTest'
+const SET_TEST_TO_FAILED = '/setTestToFailed'
+const SET_TEST_TO_PASSED = '/setTestToPassed'
+const SET_TEST_TO_TODO = '/setTestToTodo'
+
+const LIST_TEST_VIEW_PATH = '../views/listTests'
+
+const DEFAULT_STATE = 'todo'
+
+let listIssuesTest = []
+let listIssues = []
+
+let projectId
+let sess
+
+/* FUNCTIONS */
+
+/**
+ * Return an array of the issues id of a list of issues that have been checked
+ * by the user in the form.
+ * @param {object} req - Used to get the issues checked by the user in the form.
+ * @param {Array} listIssues - The list of issues of the test.
+ * @returns {Array}
+ */
+function isChecked(req, listIssues) {
+  const result = []
+  listIssues.forEach(issue => {
+    if (req.body['' + issue.id]) {
+      result.push(issue.id)
+    }
+  })
+  return result
+}
+
+/**
+ * Change the state of a test and update the display.
+ * @param {object} req - Used to get the issues checked by the user in the form.
+ * @param {object} res - Used to render the list of the tests.
+ * @param {string} newState - The new state of the test.
+ */
+function changeStateTest(req, res, newState) {
+  const testId = req.query.testId
+  db._updateTestState(testId, newState).then(testId => {
+    db._setIssuesToTest(testId, listIssuesTest).then(result => {
+      res.redirect('back')
+    })
+  })
+}
+
+/**
+ * Render the list of the tests of the project.
+ * Get the tests and the issues from the database using the project id.
+ * LIST_TEST_ROUTE is the route of the page.
+ * LIST_TEST_VIEW_PATH is the path to the view of this route.
+ * function is the function applied to this route.
+ */
+app.get(LIST_TEST_ROUTE, function(req, res) {
+  projectId = req.query.projectId
+  sess = req.session
+
+  listIssuesTest = []
+  listIssues = []
+  db._getProjectFromProjectId(projectId).then(result => {
+    db._getAllProjectIssues(projectId).then(issues => {
+      issues.forEach(issue => {
+        listIssues.push(issue)
+      })
+      db._getAllTestsFromProject(projectId).then(listTests => {
+        res.render(LIST_TEST_VIEW_PATH, {
+          session: sess,
+          listTests: listTests,
+          project: sess.project,
+          listProjects: sess.listProjects,
+          listIssuesTest: listIssues
+        })
+      })
+    })
+  })
+})
+
+/**
+ * Render the list of the tests of the project after deleting a test.
+ * Get the test id of the test to remove from the view and delete it from the database.
+ * REMOVE_TEST_ROUTE is the route of the page.
+ * function is the function applied to this route.
+ */
+app.post(REMOVE_TEST_ROUTE, function(req, res) {
+  const testIdToRemove = req.body.testIdToRemove
+  db._deleteTest(testIdToRemove).then(result => {
+    res.redirect('back')
+  })
+})
+
+/**
+ * Create a new test with the information the user entered and add it to the database.
+ * Render the list of the tests of the project after creating a new test.
+ * CREATE_TEST_ROUTE is the route of the page.
+ * function is the function applied to this route.
+ */
+app.post(CREATE_TEST_ROUTE, function(req, res) {
+  const testName = req.body.testName
+  const testDescription = req.body.testDescription
+  const resultExpected = req.body.testResultExpected
+  const lastVersionValidated = req.body.testLastVersionValidated
+
+  listIssuesTest = isChecked(req, listIssues)
+
+  db._addTest(
+    projectId,
+    testName,
+    testDescription,
+    resultExpected,
+    lastVersionValidated,
+    DEFAULT_STATE
+  ).then(testId => {
+    db._setIssuesToTest(testId, listIssuesTest).then(result => {
+      res.redirect('back')
+    })
+  })
+})
+
+/**
+ * Update the state of the selected test to 'failed' and display the list of tests.
+ */
+app.get(SET_TEST_TO_FAILED, function(req, res) {
+  changeStateTest(req, res, 'failed')
+})
+
+/**
+ * Update the state of the selected test to 'passed' and display the list of tests.
+ */
+app.get(SET_TEST_TO_PASSED, function(req, res) {
+  changeStateTest(req, res, 'passed')
+})
+
+/**
+ * Update the state of the selected test to 'todo' and display the list of tests.
+ */
+app.get(SET_TEST_TO_TODO, function(req, res) {
+  changeStateTest(req, res, 'todo')
+})
+
+/**
+ * Export the app so the routes can be used in other files.
+ */
+module.exports.app = app
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#app">app</a></li><li><a href="global.html#changeStateTest">changeStateTest</a></li><li><a href="global.html#isChecked">isChecked</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Dec 06 2019 00:30:38 GMT+0100 (GMT+01:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

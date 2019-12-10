@@ -1,20 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <meta name="author" content="gr1_eq7" />
+    <title><%=project.name%></title>
+  </head>
 
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <meta name="author" content="gr1_eq7"/>
-  <title><%=project.name%></title>
-</head>
-<body>
-  <%- include ../views/partials/header.ejs %>
-  
-  <div class="row">
-  <% include ./projectSidebar %>
-    <div class="col-9">
-      OVERVIEW PROJECT
+  <body>
+    <%- include ../views/partials/header.ejs %>
+
+    <div class="row">
+      <% include ./projectSidebar %>
+      <div class="col-9">
+        <div class="col-12">
+          <br />
+          <h1>Current Sprint overview</h1>
+          <hr />
+          <div class="row">
+            <div class="col-6">
+              <h2>Task summary :</h2>
+              <ul class="list-group text-black list-group-flush">
+                <li class="list-group-item">
+                  Number of tasks :
+
+                  <strong><%=sprintTasksSummary[0]%></strong>
+                </li>
+                <li class="list-group-item">
+                  Tasks done :
+                  <strong><%=sprintTasksSummary[1]%></strong>
+                </li>
+                <li class="list-group-item">
+                  Ongoing tasks :
+                  <strong><%=sprintTasksSummary[2]%></strong>
+                </li>
+                <li class="list-group-item">
+                  Tasks to do :
+                  <strong><%=sprintTasksSummary[3]%></strong>
+                </li>
+              </ul>
+            </div>
+            <div class="col-6">
+              <h2>Issues summary :</h2>
+              <ul class="list-group text-black list-group-flush">
+                <li class="list-group-item">
+                  Number of issues :
+                  <strong
+                    ><%= sprintIssuesSummary[1] + sprintIssuesSummary[2] +
+                    sprintIssuesSummary[3] + sprintIssuesSummary[4]%></strong
+                  >
+                </li>
+                <li class="list-group-item">
+                  Issues done :
+                  <strong><%= sprintIssuesSummary[1]%></strong>
+                </li>
+                <li class="list-group-item">
+                  Ongoing issues :
+                  <strong><%= sprintIssuesSummary[2]%></strong>
+                </li>
+                <li class="list-group-item">
+                  Issues to do :
+                  <strong><%= sprintIssuesSummary[3]%></strong>
+                </li>
+                <li class="list-group-item">
+                  Issues undefined :
+                  <strong><%= sprintIssuesSummary[4]%></strong>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div class="col-12">
+          <br />
+          <h1>Project Summary</h1>
+          <hr />
+          <div>
+            <h2>Issues summary :</h2>
+            <ul class="list-group text-black list-group-flush">
+              <li class="list-group-item">
+                Number of issues :
+                <strong><%= projectIssuesSummary[0]%></strong>
+              </li>
+              <li class="list-group-item">
+                Issues done :
+                <strong><%= projectIssuesSummary[1]%></strong>
+              </li>
+              <li class="list-group-item">
+                Ongoing issues :
+                <strong><%= projectIssuesSummary[2]%></strong>
+              </li>
+              <li class="list-group-item">
+                Issues to do :
+                <strong><%= projectIssuesSummary[3]%></strong>
+              </li>
+              <li class="list-group-item">
+                Issues undefined :
+                <strong><%= projectIssuesSummary[4]%></strong>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

@@ -16,48 +16,66 @@
     <% include ./projectSidebar %>
     <div class="col-9">
       <form class="px-4 py-3" action="/modifyTest?projectId=<%= project.id %>&testId=<%= test.id %>" method="post">
-        <div class="form-group">
-          <label>Nom : <input id="testName" type="text" name="testName" value="<%= test.name %>" required></label><br>
-          <label>Description de la fonction à tester : <input id="testDescription" type="text" name="testDescription"
-              value="<%= test.description %>" required></label> <br>
-          <label>Résultats attendus : <input id="testResult" type="text" name="testResultExpected"
-              value="<%= test.resultExpected %>" required></label><br>
-          <label>Dernière version validée: <input id="testValidVersion" type="text" name="testLastVersionValidated"
-              value="<%= test.lastVersionValidated %>" required></label><br>
+        <div class="card form-group">
+          <h5 class="card-header" id="headingModifyIssue">
+            <i class="fa fa-chevron-down pull-right"></i>
+            <div class="form-row form-inline">
+              <label class="col-form-label" for="testName">Name:</label><br>
+              <input class="form-control" id="testName" type="text" name="testName" value="<%= test.name %>"
+                required><br>
+            </div>
+          </h5>
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <label class="col-form-label" for="testDescription">Description of the function to
+                  test:</label><br>
+                <input class="form-control" id="testDescription" type="text" name="testDescription"
+                  value="<%= test.description %>" required><br>
+                <label class="col-form-label" for="testResult">Results expected:</label><br>
+                <input class="form-control" id="testResult" type="text" name="testResultExpected"
+                  value="<%= test.resultExpected %>" required><br>
+                <label class="col-form-label" for="testValidVersion">Last version validated:</label><br>
+                <input class="form-control" id="testValidVersion" type="text" name="testLastVersionValidated"
+                  value="<%= test.lastVersionValidated %>" required><br>
 
-          <label>State:</label>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="testState" id="todoState" value="todo"
-              <% if (test.state === 'todo') {%> checked <% } %> />
-            <label class="form-check-label" for="todoState">To do</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="testState" id="passedState" value="passed"
-              <% if (test.state === 'passed') {%> checked <% } %> />
-            <label class="form-check-label" for="passedState">Passed</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="testState" id="failedState" value="failed"
-              <% if (test.state === 'failed') {%> checked <% } %> />
-            <label class="form-check-label" for="failedState">Failed</label>
-          </div><br>
+                <label class="col-form-label">State:</label>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="testState" id="todoState" value="todo"
+                    <% if (test.state === 'todo') {%> checked <% } %> />
+                  <label class="form-check-label" for="todoState">To do</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="testState" id="passedState" value="passed"
+                    <% if (test.state === 'passed') {%> checked <% } %> />
+                  <label class="form-check-label" for="passedState">Passed</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="testState" id="failedState" value="failed"
+                    <% if (test.state === 'failed') {%> checked <% } %> />
+                  <label class="form-check-label" for="failedState">Failed</label>
+                </div><br>
 
-          <label>Issues:</label><br>
-          <ul id="listIssuesTest" class="list-inline">
-            <% listIssues.forEach(issue => { %>
-            <li class="list-inline-item">
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="<%=issue.id%>" id="<%=issue.id%>"
-                  value="<%= issue.id%>" <% if (listIssuesIdsTest.indexOf(issue.id) > -1 ) {%> checked <% } %> />
-                <label class="custom-control-label" for="<%=issue.id%>">
-                  <%= issue.id + ": " + issue.name %></label>
-              </div>
-            </li>
-            <% }); %>
-          </ul>
+                <label class="col-form-label">Issues:</label><br>
+                <ul id="listIssuesTest" class="list-inline">
+                  <% listIssues.forEach(issue => { %>
+                  <li class="list-inline-item">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" class="custom-control-input" name="<%=issue.id%>" id="<%=issue.id%>"
+                        value="<%= issue.id%>" <% if (listIssuesIdsTest.indexOf(issue.id) > -1 ) {%> checked <% } %> />
+                      <label class="custom-control-label" for="<%=issue.id%>">
+                        <%= issue.id + ": " + issue.name %></label>
+                    </div>
+                  </li>
+                  <% }); %>
+                </ul>
+              <li class="list-group-item">
+                <button type="submit" href="" class="btn btn-outline-success float-right"
+                  id="modifyTest">&#10004;</button>
+              </li>
+            </ul>
+          </div>
         </div>
-
-        <button type="submit" class="btn btn-primary" formaction="/modifyTest">Enregistrer les modifications</button>
       </form>
     </div>
   </div>

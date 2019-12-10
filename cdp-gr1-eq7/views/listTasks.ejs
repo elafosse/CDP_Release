@@ -9,7 +9,7 @@
   <script defer src="../backend/listTasks.js"></script>
   <meta name="author" content="gr1_eq7" />
 
-  <title>Liste des taches</title>
+  <title>Task list</title>
 </head>
 <!-- Template pour les tasks :
             <div class="list-group-item list-group-item-action flex-column align-items-start">
@@ -28,32 +28,31 @@
     <% include ./projectSidebar %>
     <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 col-xl-9">
       <br>
-      <h1>List of Tasks</h1>
+      <h1>List of tasks</h1>
       <hr>
-      <div class="col-9">
+      <div class="col-12">
         <div class="row">
-          <div class="list-group d-inline-flex w-25 m-2" id="tasks_todo">
-            <p>Taches à faire</p>
+          <div class="list-group d-inline-flex col-4" id="tasks_todo">
+            <h2>Tasks To Do</h2>
 
             <% taskToDo.forEach(task => { %> <%- include partials/taskList.ejs
             %> <% }); %>
           </div>
 
-          <div class="list-group d-inline-flex w-25 m-2" id="tasks_doing">
-            <p>Taches en cours</p>
+          <div class="list-group d-inline-flex col-4" id="tasks_doing">
+            <h2>Ongoing tasks</h2>
             <% taskDoing.forEach(task => { %> <%- include partials/taskList.ejs
             %> <% }); %>
           </div>
 
-          <div class="list-group d-inline-flex w-25 m-2" id="tasks_done">
-            <p>Taches terminées</p>
+          <div class="list-group d-inline-flex col-4" id="tasks_done">
+            <h2>Tasks done</h2>
             <% taskDone.forEach(task => { %> <%- include partials/taskList.ejs
             %> <% }); %>
           </div>
         </div>
       </div>
-      <a class="btn btn-primary" href="./newTask?projectId=<%=projectId %>&action=create" role="button">Ajouter
-        tache</a>
+      <a class="btn btn-primary" href="./newTask?projectId=<%=projectId %>&action=create" role="button">Add new task</a>
     </div>
 </body>
 

@@ -1,19 +1,34 @@
-<link rel="stylesheet" type="text/css" href="css/simple-sidebar.css"/>
+<link rel="stylesheet" type="text/css" href="css/simple-sidebar.css" />
 
 <div class="d-flex" id="wrapper">
-  
-  <!-- Sidebar -->
-  <div class="bg-light border-right col-12" id="sidebar-wrapper">
-    <div class="sidebar-heading col-12"><h1><%= project.name %></h1></div>
-    <div class="list-group list-group-flush col-12">
-      <a class="nav-link sidebar-item btn-dark" href="/listIssues?projectId=<%= project.id %>">Issues</a>
-      <a class="nav-link sidebar-item btn-light" href="/listTasks?projectId=<%= project.id %>">Tasks</a>
-      <a class="nav-link sidebar-item btn-dark" href="/listSprints?projectId=<%= project.id %>">Sprints</a>
-      <a class="nav-link sidebar-item btn-light" href="/listReleases?projectId=<%= project.id %>">Releases</a>
-      <a class="nav-link sidebar-item btn-dark" href="/listDoc?projectId=<%= project.id %>">Doc</a>
-      <a class="nav-link sidebar-item btn-light" href="/listTests?projectId=<%= project.id %>">Tests</a>
+  <div class="bg-light border-right" id="sidebar-wrapper">
+    <div class="sidebar-heading">
+      <h1 class="pl-3">
+        <a class="nav-link btn-light" href="/overviewProject?projectId=<%=project.id%>">
+          <%= project.name %>
+        </a>
+      </h1>
+    </div>
+    <div class="list-group list-group-flush">
+      <a class="nav-link sidebar-item btn-dark" href="/listIssues?projectId=<%= project.id %>">
+        <div class="pl-3">Issues</div>
+      </a>
+      <a class="nav-link sidebar-item btn-light" href="/listTasks?projectId=<%= project.id %>">
+        <div class="pl-3">Tasks</div>
+      </a>
+      <a class="nav-link sidebar-item btn-dark" href="/listSprints?projectId=<%= project.id %>">
+        <div class="pl-3">Sprints</div>
+      </a>
+      <a class="nav-link sidebar-item btn-light" href="/listReleases?projectId=<%= project.id %>">
+        <div class="pl-3">Releases</div>
+      </a>
+      <a class="nav-link sidebar-item btn-dark" href="/listTests?projectId=<%= project.id %>">
+        <div class="pl-3">Tests</div>
+      </a>
+      <a class="nav-link sidebar-item btn-light" href="/projectSettings?projectId=<%= project.id %>">
+        <div class="pl-3">Project
+          Settings</div>
+      </a>
     </div>
   </div>
 </div>
-
-

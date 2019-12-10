@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script defer src="../backend/projectSettings.js"></script>
+  <meta name="author" content="gr1_eq7" />
+  <title><%= project.name + " | settings"%></title>
+</head>
+
+<body>
+  <%- include ../views/partials/header.ejs %>
+  <div class="row">
+    <div class="col-9">
+      <form class="px-4 py-3" action="/projectSettings" method="post" id="project-settings">
+        <div id="projectSettings" class="card form-group">
+          <h5 class="card-header" id="headingModifyIssue">
+            <i class="fa fa-chevron-down pull-right"></i>
+            <div class="form-row form-inline">
+              <label class="col-form-label" for="projectName">Name:</label>
+              <input class="form-control" id="projectName" type="text" name="projectName" value="<%=projectName%>"
+                required>
+            </div>
+          </h5>
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <label class="col-form-label" for="projectDescription">Description:</label>
+                <input class="form-control" id="projectDescription" type="text" name="projectDescription"
+                  value="<%=projectDescription%>" required><br>
+
+                <label class="col-form-label" for="userGitHub">GitHub username for the repository of the
+                  releases:</label>
+                <input class="form-control" id="userGitHub" type="text" name="userGitHub" value="<%=userGitHub%>"><br>
+                <label class="col-form-label" for="repositoryGitHub">Name of the GitHub repository for the
+                  releases:</label>
+                <input class="form-control" id="repositoryGitHub" type="text" name="repositoryGitHub"
+                  value="<%=repositoryGitHub%>"><br>
+
+                <label class="col-form-label" for="memberUsernameToAdd">Add a member to the project:
+                  <input class="form-control" id="usernameMemberToAdd" name="memberUsernameToAdd"></label>
+                <button type="submit" class="btn btn-primary" formaction="/addMemberSettings">Add</button>
+
+                <ul id="listProjectMembers">List of the members of the project: <%= listMembers.length %>
+                  <% listMembers.forEach(member => { %>
+                  <li><%= member %>
+                    <form action="/removeMemberSettings" method="post" id="remove">
+                      <input type="text" name="memberUsernameToRemove" class="form-control" value="<%= member %>"
+                        hidden>
+                      <button href="" class="btn btn-outline-danger float-right"
+                        formaction="/removeMemberSettings">&#x274C;</button>
+                    </form>
+                  </li>
+                  <% }); %>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <button type="submit" href="" class="btn btn-outline-success float-right" id="createNewProject"
+                  form="project-settings">&#10004;</button>
+              </li>
+          </div>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

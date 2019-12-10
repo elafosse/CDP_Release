@@ -21,63 +21,18 @@ const NEW_TASK_PATH = '../views/newTask.ejs'
 
 let sess
 
-let listIssues
-let listProjectMembers
-let listProjectTasks
-
-app.get('/newTask', function(req, res) {
-  listIssues = []
-  listProjectMembers = []
-  listProjectTasks = []
-  sess = req.session
-
-  db._getAllProjectIssues(req.query.projectId).then(result => {
-    listIssues = result
-    db._getMembersOfProject(req.query.projectId).then(result => {
-      listProjectMembers = result
-      db._getAllTasksOfProject(req.query.projectId).then(result => {
-        listProjectTasks = result
-        res.render(NEW_TASK_PATH, {
-          listIssues: listIssues,
-          listProjectMembers: listProjectMembers,
-          listProjectTasks: listProjectTasks,
-          projectId: req.query.projectId
-        })
-      })
-    })
-  })
-})
-
-app.post('/newTask', function(req, res) {
-  db._addTask(
-    req.query.projectId,
-    req.body.taskName,
-    req.body.taskDescription,
-    req.body.taskState,
-    req.body.startDate,
-    req.body.taskDuration,
-    req.body.taskDoD,
-    req.body.taskMember,
-    req.body.taskMember,
-    req.body.taskRequired,
-    req.body.taskIssue
-  ).then(res.redirect('/listIssues?projectId='.concat(req.query.projectId)))
-})
-
-/* Test values
-let taskList = [];
-const testTask1 = new tasks.Task("2", "1", "Task 1", "Desc task 1", "To Do", "", "", "", [], [])
-const testTask2 = new tasks.Task("2", "2", "Task 2", "Desc task 2", "Doing", "", "", "", [], [])
-const testTask3 = new tasks.Task("2", "3", "Task 3", "Desc task 3", "Done", "", "", "", [], []) 
-
-taskList.push(testTask1)
-taskList.push(testTask2)
-taskList.push(testTask3) */
-
 let taskToDo
 let taskDoing
 let taskDone
 
+/**
+ * Render the page at the route '/listTasks' with the list of tasks of a project.
+ * Get all the tasks and their information from the database.
+ * taskToDo is the list of tasks to do.
+ * taskDoing is the list of tasks ongoing.
+ * taskDone is the list of taks done.
+ * function is the function applied to this route.
+ */
 app.get('/listTasks', function(req, res) {
   taskToDo = []
   taskDoing = []
@@ -108,6 +63,11 @@ app.get('/listTasks', function(req, res) {
   })
 })
 
+/**
+ * Render the page at the route '/listTasks' with the list of tasks of a project after a task has been deleted.
+ * Delete the task from the database.
+ * function is the function applied to this route.
+ */
 app.post('/removeTask', function(req, res) {
   db._deleteTask(req.query.taskId).then(
     res.redirect('/listTasks?projectId='.concat(req.query.projectId))

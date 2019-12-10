@@ -8,7 +8,7 @@
   <script src="../backend/newTask.js"></script>
   <meta name="author" content="gr1_eq7" />
   <title>
-    <% if(action === 'create') { %>Création d'une tâche<% } else { %>Modification d'une tâche<% } %>
+    <% if(action === 'create') { %>Create a task<% } else { %>Modify a task<% } %>
   </title>
 </head>
 
@@ -17,99 +17,107 @@
   <div class="row">
     <% include ./projectSidebar %>
     <div class="col-9">
-      <form <% if(action === 'create') {%> action="/newTask?projectId=<%= projectId%>" <% } else { %>
+      <form class="px-4 py-3" <% if(action === 'create') {%> action="/newTask?projectId=<%= projectId%>" <% } else { %>
         action="/modifyTask?projectId=<%= projectId%>&taskId=<%= task.taskId%>" <% } %> method="post" id="new-task">
-        <div class="form-group">
-          <label for="taskName">Nom de la tache</label>
-          <input type="text" class="form-control" id="taskName" name="taskName" placeholder="Nom de la tache"
-            <% if (action === 'modify') {%> value="<%= task.name %>" <% } %> required />
-        </div>
+        <div class="card form-group">
+          <h5 class="card-header" id="headingModifyIssue">
+            <i class="fa fa-chevron-down pull-right"></i>
+            <div class="form-row form-inline">
+              <label class="col-form-label" for="taskName">Task name</label>
+              <input type="text" class="form-control" id="taskName" name="taskName" placeholder="Task name"
+                <% if (action === 'modify') {%> value="<%= task.name %>" <% } %> required />
+            </div>
+          </h5>
 
-        <div class="form-group">
-          <label for="taskDescription">Description de la tache</label>
-          <textarea type="text" class="form-control" id="taskDescription" name="taskDescription"
-            placeholder="Description"><% if (action === 'modify') {%><%= task.description %><% } %></textarea>
-        </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="taskDescription">Task description</label>
+              <textarea type="text" class="form-control" id="taskDescription" name="taskDescription"
+                placeholder="Description"><% if (action === 'modify') {%><%= task.description %><% } %></textarea>
+            </div>
 
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="taskState" id="taskState1" name="taskState1" value="To Do" <% if (action === 'modify') {
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="taskState" id="taskState1" name="taskState1"
+                value="To Do" <% if (action === 'modify') {
             if (task.state === 'To Do') {%> checked <% }} %> required />
-          <label class="form-check-label" for="taskState1">A faire</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="taskState" id="taskState2" value="Doing" <% if (action === 'modify') {
+              <label class="form-check-label" for="taskState1">To do</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="taskState" id="taskState2" value="Doing" <% if (action === 'modify') {
             if (task.state === 'Doing') {%> checked <% }} %> />
-          <label class="form-check-label" for="taskState2">En cours</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="taskState" id="taskState3" value="Done" <% if (action === 'modify') {
+              <label class="form-check-label" for="taskState2">Doing</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="taskState" id="taskState3" value="Done" <% if (action === 'modify') {
             if (task.state === 'Done') {%> checked <% }} %> />
-          <label class="form-check-label" for="taskState3">Fait</label>
-        </div>
-        <div class="form-group">
-          <label for="startDate">Date de début</label>
-          <input class="form-control" type="date" id="startDate" name="startDate" <% if (action === 'modify') {
+              <label class="form-check-label" for="taskState3">Done</label>
+            </div>
+            <div class="form-group">
+              <label for="startDate">Start date</label>
+              <input class="form-control" type="date" id="startDate" name="startDate" <% if (action === 'modify') {
             let year = task.start_date.getFullYear()
-            let month = task.start_date.getMonth()
+            let month = task.start_date.getMonth() + 1
             let day = task.start_date.getDate()
-            %> value="<%= year %>-<%= month%>-<%= day%>" <% } %> required />
-        </div>
-        <div class="form-group">
-          <label for="taskDuration">Durée de la tache</label>
-          <input type="number" class="form-control" id="taskDuration" name="taskDuration" placeholder="0"
-            <% if (action === 'modify') {%> value="<%= task.realisation_time %>" <% } %> required />
-        </div>
+            %> value="<%= year %>-<% if(month < 10){%>0<%}%><%= month%>-<% if(day < 10){%>0<%}%><%= day%>" <% } %>
+                required />
+            </div>
+            <div class="form-group">
+              <label for="taskDuration">Task duration</label>
+              <input type="number" class="form-control" id="taskDuration" step="0.1" name="taskDuration" placeholder="In days" min="0"
+                <% if (action === 'modify') {%> value="<%= task.realisation_time %>" <% } %> required />
+            </div>
 
-        <div class="form-group">
-          <label for="taskDoD">Definition of Done</label>
-          <textarea type="text" class="form-control" id="taskDoD" name="taskDoD"
-            placeholder="Definition of done"><% if (action === 'modify') {%><%= task.dod %><% } %></textarea>
-        </div>
+            <div class="form-group">
+              <label for="taskDoD">Definition of Done</label>
+              <textarea type="text" class="form-control" id="taskDoD" name="taskDoD"
+                placeholder="Definition of done"><% if (action === 'modify') {%><%= task.dod %><% } %></textarea>
+            </div>
 
-        <div class="form-group">
-          <label for="taskMember">Affectation des membres</label>
-          <select multiple class="form-control" id="taskMember" name="taskMember">
-            <% listProjectMembers.forEach(member => { %>
-            <option value="<%= member %>" <%if(action === 'modify' && task.members && task.members.length) {
+            <div class="form-group">
+              <label for="taskMember">Members assigned</label>
+              <select multiple class="form-control" id="taskMember" name="taskMember">
+                <% listProjectMembers.forEach(member => { %>
+                <option value="<%= member %>" <%if(action === 'modify' && task.members && task.members.length) {
               task.members.forEach(element => {
                 if(element === member){ %> selected <% 
                 }
               });  
             } %>> <%= member %></option>
-            <% }); %>
-          </select>
-        </div>
+                <% }); %>
+              </select>
+            </div>
 
-        <div class="form-group">
-          <label for="taskRequired">Taches pré-requises</label>
-          <select multiple class="form-control" id="taskRequired" name="taskRequired">
-            <% listProjectTasks.forEach(taskDep => { %>
-            <option value="<%= taskDep.taskId %>" <% if(action === 'modify' && task.dependancies && task.dependancies.length){
+            <div class="form-group">
+              <label for="taskRequired">Required tasks</label>
+              <select multiple class="form-control" id="taskRequired" name="taskRequired">
+                <% listProjectTasks.forEach(taskDep => { %>
+                <option value="<%= taskDep.taskId %>" <% if(action === 'modify' && task.dependancies && task.dependancies.length){
                 task.dependancies.forEach(element => {
                   if(element.taskId === taskDep.taskId) { %> selected <% }
                 }); 
               }%>><%= taskDep.name %></option>
-            <% }); %>
-          </select>
-        </div>
+                <% }); %>
+              </select>
+            </div>
 
-        <div class="form-group">
-          <label for="taskIssue">Issues liées</label>
-          <select multiple class="form-control" id="taskIssue" name="taskIssue">
-            <% listIssues.forEach(issue => { %>
-            <option value="<%= issue.id%>" <% if(action === 'modify' && task.issues && task.issues.length) {
+            <div class="form-group">
+              <label for="taskIssue">Related issues</label>
+              <select multiple class="form-control" id="taskIssue" name="taskIssue">
+                <% listIssues.forEach(issue => { %>
+                <option value="<%= issue.id%>" <% if(action === 'modify' && task.issues && task.issues.length) {
                 task.issues.forEach(element => {
                   if(element.id === issue.id) {%> selected <% }
                 }); 
               }%>> <%= issue.name %></option>
-            <% }); %>
-          </select>
-        </div>
+                <% }); %>
+              </select>
+            </div>
 
-        <button class="btn btn-primary" type="submit"><% if(action === 'create'){%>Créer la tache<%} else { %>Modifier
-          la tache<%}%></button>
-    </form>
+            <button class="btn btn-primary" type="submit"><% if(action === 'create'){%>Create task<%} else { %>Modify task<%}%></button>
+          </div>
+        </div>
+      </form>
     </div>
-    </div>
+  </div>
   </body>
 </html>

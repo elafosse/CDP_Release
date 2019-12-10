@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script defer src="../backend/modifyTest.js"></script>
+  <meta name="author" content="gr1_eq7" />
+  <title><%=project.name + " | modifier release"%></title>
+</head>
+
+<body>
+  <%- include ../views/partials/header.ejs %>
+  <div class="row">
+    <% include ./projectSidebar %>
+    <div class="col-9">
+      <form class="px-4 py-3" action="/modifySprintOfRelease?projectId=<%= project.id %>&releaseId=<%= releaseId %>"
+        method="post">
+        <div class="card form-group">
+          <h5 class="card-header" id="headingModifySprintOfRelease">
+            <i class="fa fa-chevron-down pull-right"></i>
+            Modify Sprint
+          </h5>
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <label class="col-form-label"><strong>Sprints:</strong></label><br>
+                <ul id="listSprints" class="list-inline">
+                  <% let i = 1 
+              listSprints.forEach(sprint => { %>
+                  <li class="list-inline-item">
+                    <div class="form-check form-check-inline">
+                      <input type="radio" class="form-check-input" name="<%=sprint.id%>" id="<%=sprint.id%>"
+                        value="<%= sprint.id%>" <%if (sprint.release === releaseId) {%> checked <% } %>>
+                      <label class="form-check-label" for="<%=sprint.id%>">
+                        <%= "Sprint " + i%></label>
+                    </div>
+                  </li>
+                  <% ++i }); %>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <button type="submit" href="" class="btn btn-outline-success float-right"
+                  id="modifySprintOfRelease">&#10004;</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -9,7 +9,7 @@ const bodyParser = require('body-parser')
 
 /* USE THE REQUIRES */
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(express.static('../public')) // Mettre l'URL du dossier 'public' par rapport a initApp.js
+app.use(express.static('../public'))
 app.use(
   session({
     secret: 'shhhhhhared-secret',
@@ -23,8 +23,12 @@ app.set('views', path.join(__dirname, './..', '/views'))
 
 const INDEX_PATH = '../views/index'
 
+/* FUNCTIONS */
 let sess
 
+/**
+ * Render the index page.
+ */
 app.get('/', function(req, res) {
   sess = req.session
   if (sess.username === undefined) {

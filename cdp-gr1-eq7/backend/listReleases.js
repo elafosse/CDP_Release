@@ -1,0 +1,188 @@
+/* CONFIG */
+const express = require('express')
+const app = express()
+
+/* REQUIRED */
+const path = require('path')
+const bodyParser = require('body-parser')
+const db = require('./db_connection')
+const session = require('express-session')
+const GitHub = require('github-api')
+const githublogin = require('./gitHubLogin')
+const modifyDoc = require('./modifyDoc')
+const modifySprintOfRelease = require('./modifySprintOfRelease')
+const Markdown = require('markdown-it')
+
+/* USE THE REQUIRES */
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(express.static('../public'))
+app.use(
+  session({
+    secret: 'shhhhhhared-secret',
+    saveUninitialized: true,
+    resave: true
+  })
+)
+app.use(githublogin.app)
+app.use(modifyDoc.app)
+app.use(modifySprintOfRelease.app)
+
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, './..', '/views'))
+
+const SET_GITHUB_ROUTE = '/setGitHub'
+
+const LIST_RELEASE_ROUTE = '/listReleases'
+const REMOVE_RELEASE_ROUTE = '/removeRelease'
+
+const LIST_RELEASE_VIEW_PATH = '../views/listReleases'
+
+const DEFAULT_FIELD = ''
+
+let git = new GitHub(DEFAULT_FIELD, DEFAULT_FIELD)
+let repo
+let listReleases = []
+let listDoc = []
+let listSprints = []
+
+let projectId
+let project
+let isAdmin = Boolean(false) // true if the user is an administrator of the project
+let userGitHub
+let repositoryGitHub
+let sess
+
+/* FUNCTIONS */
+
+/**
+ * Render the description of a release using the Markdown format.
+ * @param {object} release - The release of which we want to display the description.
+ */
+function renderDescription(release) {
+  const md = new Markdown()
+  return md.render(release.body)
+}
+
+/**
+ * Get the releases information from the GitHub repository of the project and render them.
+ * Releases from private repository cannot be seen if the user does not have a GitHub account.
+ * Only the administrators of the project can change the GitHub repository.
+ * LIST_RELEASE_ROUTE is the route of the page.
+ * LIST_RELEASE_VIEW_PATH is the path to the view of this route.
+ */
+app.get(LIST_RELEASE_ROUTE, function(req, res) {
+  projectId = req.query.projectId
+  sess = req.session
+
+  listReleases = []
+  listDoc = []
+  listSprints = []
+  isAdmin = Boolean(false)
+
+  userGitHub = DEFAULT_FIELD
+  repositoryGitHub = DEFAULT_FIELD
+
+  db._getProjectFromProjectId(projectId).then(p => {
+    if (
+      // if the user is connected to their GitHub on ScrumHelper
+      // it allows them to see the releases of a private repository
+      sess.usernameGitHub !== undefined &&
+      sess.passwordGitHub !== undefined
+    ) {
+      git = new GitHub({
+        username: sess.usernameGitHub,
+        password: sess.passwordGitHub
+      })
+    }
+    project = p
+    repo = git.getRepo(project.userGitHub, project.repositoryGitHub) // Get the repository from GitHub
+    userGitHub = project.userGitHub
+    repositoryGitHub = project.repositoryGitHub
+
+    sess.userGitHub = userGitHub
+    sess.repositoryGitHub = repositoryGitHub
+    req.session = sess
+
+    repo
+      .listReleases(null)
+      .then(list => {
+        listReleases = list.data // we want only the releases information
+        db._getAdminsOfProject(projectId).then(admins => {
+          // check if the user is an administrator of the project
+          // so they can change the GitHub repository for releases
+          if (admins.indexOf(sess.username) !== -1) {
+            isAdmin = Boolean(true)
+          }
+          db._getAllSprintFromProject(projectId).then(sprints => {
+            listSprints = sprints
+            db._getDocsFromReleases(listReleases).then(result => {
+              listDoc = result
+              res.render(LIST_RELEASE_VIEW_PATH, {
+                session: sess,
+                listReleases: listReleases,
+                project: sess.project,
+                listSprints: listSprints,
+                listDoc: listDoc,
+                renderDescription: renderDescription,
+                isAdmin: isAdmin
+              })
+            })
+          })
+        })
+      })
+      .catch(list => {
+        // if there is no release in the GitHub repository
+        res.render(LIST_RELEASE_VIEW_PATH, {
+          session: sess,
+          listReleases: listReleases,
+          project: sess.project,
+          listProjects: sess.listProjects,
+          listSprints: listSprints,
+          listDoc: listDoc,
+          renderDescription: renderDescription,
+          isAdmin: isAdmin
+        })
+      })
+  })
+})
+
+/**
+ * Delete the release of the GitHub.
+ * It also delete the documentation of this release from the database.
+ * REMOVE_RELEASE_ROUTE is the route to remove a release.
+ * function is the function applied to this route.
+ */
+app.post(REMOVE_RELEASE_ROUTE, function(req, res) {
+  const releaseIdToRemove = req.body.releaseIdToRemove
+  repo = git.getRepo(project.userGitHub, project.repositoryGitHub)
+
+  db._deleteDoc(releaseIdToRemove)
+  repo.deleteRelease(releaseIdToRemove)
+
+  res.redirect('back')
+})
+
+/**
+ * Change the GitHub repository of the releases and update the list of releases.
+ * The username of the owner of the GitHub repository and the name of the repository
+ * are entered by the user.
+ * Can only be made by an administrator of the project.
+ * SET_GITHUB_ROUTE is the route to modify the GitHub repository of the release.
+ * function is the function applied to this route.
+ */
+app.post(SET_GITHUB_ROUTE, function(req, res) {
+  userGitHub = req.body.userGitHub
+  repositoryGitHub = req.body.repositoryGitHub
+
+  db._modifyProject(
+    projectId,
+    sess.project.name,
+    sess.project.description,
+    userGitHub,
+    repositoryGitHub
+  ).then(project => {
+    res.redirect('back')
+  })
+})
+
+module.exports.app = app

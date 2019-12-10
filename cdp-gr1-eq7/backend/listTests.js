@@ -45,6 +45,13 @@ let sess
 
 /* FUNCTIONS */
 
+/**
+ * Return an array of the issues id of a list of issues that have been checked
+ * by the user in the form.
+ * @param {object} req - Used to get the issues checked by the user in the form.
+ * @param {Array} listIssues - The list of issues of the test.
+ * @returns {Array}
+ */
 function isChecked(req, listIssues) {
   const result = []
   listIssues.forEach(issue => {
@@ -55,6 +62,28 @@ function isChecked(req, listIssues) {
   return result
 }
 
+/**
+ * Change the state of a test and update the display.
+ * @param {object} req - Used to get the issues checked by the user in the form.
+ * @param {object} res - Used to render the list of the tests.
+ * @param {string} newState - The new state of the test.
+ */
+function changeStateTest(req, res, newState) {
+  const testId = req.query.testId
+  db._updateTestState(testId, newState).then(testId => {
+    db._setIssuesToTest(testId, listIssuesTest).then(result => {
+      res.redirect('back')
+    })
+  })
+}
+
+/**
+ * Render the list of the tests of the project.
+ * Get the tests and the issues from the database using the project id.
+ * LIST_TEST_ROUTE is the route of the page.
+ * LIST_TEST_VIEW_PATH is the path to the view of this route.
+ * function is the function applied to this route.
+ */
 app.get(LIST_TEST_ROUTE, function(req, res) {
   projectId = req.query.projectId
   sess = req.session
@@ -79,6 +108,12 @@ app.get(LIST_TEST_ROUTE, function(req, res) {
   })
 })
 
+/**
+ * Render the list of the tests of the project after deleting a test.
+ * Get the test id of the test to remove from the view and delete it from the database.
+ * REMOVE_TEST_ROUTE is the route of the page.
+ * function is the function applied to this route.
+ */
 app.post(REMOVE_TEST_ROUTE, function(req, res) {
   const testIdToRemove = req.body.testIdToRemove
   db._deleteTest(testIdToRemove).then(result => {
@@ -86,6 +121,12 @@ app.post(REMOVE_TEST_ROUTE, function(req, res) {
   })
 })
 
+/**
+ * Create a new test with the information the user entered and add it to the database.
+ * Render the list of the tests of the project after creating a new test.
+ * CREATE_TEST_ROUTE is the route of the page.
+ * function is the function applied to this route.
+ */
 app.post(CREATE_TEST_ROUTE, function(req, res) {
   const testName = req.body.testName
   const testDescription = req.body.testDescription
@@ -108,31 +149,25 @@ app.post(CREATE_TEST_ROUTE, function(req, res) {
   })
 })
 
+/**
+ * Update the state of the selected test to 'failed' and display the list of tests.
+ */
 app.get(SET_TEST_TO_FAILED, function(req, res) {
-  const testId = req.query.testId
-  db._updateTestState(testId, 'failed').then(testId => {
-    db._setIssuesToTest(testId, listIssuesTest).then(result => {
-      res.redirect('back')
-    })
-  })
+  changeStateTest(req, res, 'failed')
 })
 
+/**
+ * Update the state of the selected test to 'passed' and display the list of tests.
+ */
 app.get(SET_TEST_TO_PASSED, function(req, res) {
-  const testId = req.query.testId
-  db._updateTestState(testId, 'passed').then(testId => {
-    db._setIssuesToTest(testId, listIssuesTest).then(result => {
-      res.redirect('back')
-    })
-  })
+  changeStateTest(req, res, 'passed')
 })
 
+/**
+ * Update the state of the selected test to 'todo' and display the list of tests.
+ */
 app.get(SET_TEST_TO_TODO, function(req, res) {
-  const testId = req.query.testId
-  db._updateTestState(testId, 'todo').then(testId => {
-    db._setIssuesToTest(testId, listIssuesTest).then(result => {
-      res.redirect('back')
-    })
-  })
+  changeStateTest(req, res, 'todo')
 })
 
 module.exports.app = app

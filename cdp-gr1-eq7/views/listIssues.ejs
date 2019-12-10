@@ -20,15 +20,15 @@
     <% include ./projectSidebar %>
     <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 col-xl-9">
       <br>
-      <h1>Liste of issues</h1>
+      <h1>List of issues</h1>
       <hr>
 
       <div id="accordion" role="tablist" aria-multiselectable="true">
         <ul class="list-unstyled">
           <% listIssues.forEach(issue => { %>
           <li>
-            <div class="card">
-              <h5 class="card-header" role="tab" id="heading<%=issue.id%>">
+            <div class="card mb-3">
+              <h5 class="card-header anchor" role="tab" id="heading<%=issue.id%>">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse<%=issue.id%>" aria-expanded="true"
                   aria-controls="collapse<%=issue.id%>" class="d-block">
                   <i class="fa fa-chevron-down pull-right"></i>
@@ -40,7 +40,9 @@
                 </a>
               </h5>
 
-              <div id="collapse<%=issue.id%>" class="collapse" role="tabpanel" aria-labelledby="heading<%=issue.id%>">
+              <div id="collapse<%=issue.id%>"
+                class="collapse <% if(locals.focusOn && focusOn == issue.id) { %> show <% } %>" role="tabpanel"
+                aria-labelledby="heading<%=issue.id%>">
                 <div class="card-body">
                   <ul class="list-group list-group-flush">
                     <li class="list-group-item">
@@ -48,10 +50,8 @@
                       <p>
                         <%= issue.description %>
                       </p>
-                    </li>
-                    <li class="list-group-item">
                       <form action="/removeIssue?projectId=<% project.id%>" method="post"
-                        onsubmit="return confirm('Voulez-vous vraiment supprimer cette issue ?')">
+                        onsubmit="return confirm('Do you really want to remove this issue ?')">
                         <input type="text" name="issueId" class="form-control" id="name" value="<%= issue.id %>"
                           hidden />
                         <button type="submit" class="btn btn-outline-danger float-right"
@@ -85,15 +85,15 @@
                   <label class="col-form-label" for="issueName">Name :</label>
                   <input class="form-control" id="issueName" type="text" name="issueName" placeholder="Name" required>
                   <label class="col-form-label" for="issuePriority">Priority :</label>
-                  <span class="badge badge-dark right"><select class="form-control" id="issuePriority" list="priorities"
-                      type="text" name="issuePriority" placeholder="Priority" required>
-                      <option>LOW</option>
-                      <option>MEDIUM</option>
-                      <option>HIGH</option>
-                    </select></span>
+                  <select class="form-control" id="issuePriority" list="priorities" type="text" name="issuePriority"
+                    placeholder="Priority" required>
+                    <option>LOW</option>
+                    <option>MEDIUM</option>
+                    <option>HIGH</option>
+                  </select>
                   <label class="col-form-label" for="issueDifficulty">Difficulty :</label>
-                  <span class="badge badge-secondary right"><input class="form-control" id="issueDifficulty"
-                      type="number" min="0" name="issueDifficulty" placeholder="Difficulty" required /></span>
+                  <input class="form-control col-sm-1" id="issueDifficulty" type="number" min="1" name="issueDifficulty"
+                    placeholder="Difficulty" required />
                 </div>
               </h5>
 

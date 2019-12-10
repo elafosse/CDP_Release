@@ -14,12 +14,13 @@ const listIssues = require('./listIssues')
 const listTasks = require('./listTasks')
 const listTests = require('./listTests')
 const listSprints = require('./listSprints')
+const listReleases = require('./listReleases')
+const projectSettings = require('./projectSettings')
 const index = require('./index')
 
 /* USE THE REQUIRES */
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(express.static('../public')) // Mettre l'URL du dossier 'public' par rapport a initApp.js
-
+app.use(express.static('public'))
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, './..', '/views'))
 
@@ -33,6 +34,7 @@ app.use(signUp.app)
 /* Projects */
 app.use(listProjects.app)
 app.use(overviewProject.app)
+app.use(projectSettings.app)
 
 /* Issues */
 app.use(listIssues.app)
@@ -41,16 +43,13 @@ app.use(listIssues.app)
 app.use(listTasks.app)
 
 /* Releases */
-
-/* Documentation */
+app.use(listReleases.app)
 
 /* Tests */
 app.use(listTests.app)
 
 /* Sprints */
 app.use(listSprints.app)
-
-/* TESTS ZONE */
 
 const NUM_PORT = 3000
 
